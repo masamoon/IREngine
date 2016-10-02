@@ -4,4 +4,11 @@
 public class Searcher {
 
     public Searcher(){}
+
+
+    public Result[] search(String query){
+        return new Result[2];
+    }
+
+
 }
