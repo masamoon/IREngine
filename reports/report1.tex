@@ -74,20 +74,22 @@
 }
 
 \renewcommand*\contentsname{Table of Contents}
-\renewcommand\lstlistlistingname{List of Code}
+%\renewcommand\lstlistlistingname{List of Code}
 \tableofcontents
 \vspace{2cm}
-\begingroup
-\let\clearpage\relax
-\lstlistoflistings
-\endgroup
+%\begingroup
+%\let\clearpage\relax
+%\lstlistoflistings
+%\endgroup
 \setcounter{secnumdepth}{2}
 \chapter{Introduction}
 
 Information retrieval is the act of collecting information from various sources, which main principle is querying the information gathered. A big example of information retrieval is Google, where a user inputs a set of keywords and gets the respective results ranked by relevance - this is called an information retrieval search engine, which is the objective of this assignment.\\\\
 This report explains the structure of this assignment, in terms of class estructure and data flow of the engine. 
 
-\chapter{Modelling}
+\vspace{2cm}
+{\let\clearpage\relax \chapter{Modelling}}
+%\chapter{Modelling}
 In order to model the structure of the search engine, there was a need to better understand each component:
 \begin{itemize}
 \item Document Processor
@@ -111,6 +113,7 @@ In order to model the structure of the search engine, there was a need to better
 \item[\textperiodcentered]Retrieves the documents that contain the queries token from the index
 \end{itemize}
 \end{itemize}
+\pagebreak
 \section{Class Diagram}
 INSERT PICTURE HERE
 \subsection{Data Flow}
