@@ -1,21 +1,31 @@
-import java.util.ArrayList;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Created by Andre on 30/09/2016.
- */
 public class Indexer {
 
-    private ArrayList<Token> tokens;
+    private Map<String,Map<Integer, List<Integer>>> index;
 
-    public Indexer(ArrayList<Token> tokens){
-
-        this.tokens = tokens;
-
+    public Indexer(){
+        index = new HashMap<>();
     }
 
-    public Index createIndex(){
-        return new Index();
+    public Indexer(URI uri){
+        this();
+        load(uri);
     }
 
-    public void index(){}
+    public void index(Document doc, String token){
+        //TODO:
+    }
+
+
+    private void serialize(){
+        //TODO: use Gson to store internal structure (index)
+    }
+
+    private void load(URI uri){
+        //TODO: use Gson to load previous stored structure (index)
+    }
 }

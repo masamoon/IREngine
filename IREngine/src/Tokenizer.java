@@ -1,22 +1,37 @@
-/**
- * Created by Andre on 30/09/2016.
- */
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+
 public class Tokenizer {
 
+    private String dataStream;
+    private Set<String> tokens;
 
-    private String datastream;
+    public Tokenizer(String dataStream){
+        this.dataStream = dataStream;
+        this.tokens = new HashSet<>();
 
-    public Tokenizer(String datastream){
-        this.datastream = datastream;
+        tokenize();
+        stopping();
+        stemming();
+
     }
 
-    public void tokenize(){
+    private void tokenize(){
+        Scanner sc = new Scanner(dataStream);
+        while(sc.hasNext())
+            tokens.add(sc.next());
 
     }
 
-    public void stopping(){}
+    private void stopping(){}
 
-    public void stemm(){}
+    private void stemming(){}
+
+
+    public Set<String> getTokens() {
+        return tokens;
+    }
 
 
 }

@@ -1,22 +1,40 @@
-import java.io.File;
+import java.net.URI;
 
-/**
- * Created by Andre on 30/09/2016.
- */
-public class Document implements IDocument {
+public class Document {
 
-    private File data;
-    private int docid;
-    private String path;
+    private int id;
 
+    private String dataStream;
 
-    public Document(File data){
-        this.data = data;
+    private URI uri;
+
+    public Document(int id, String dataStream, URI uri) {
+        this.id = id;
+        this.dataStream = dataStream;
+        this.uri = uri;
     }
 
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
+    public String getDataStream() {
+        return dataStream;
+    }
 
+    public void setDataStream(String dataStream) {
+        this.dataStream = dataStream;
+    }
 
+    public URI getUri() {
+        return uri;
+    }
 
+    public void setUri(URI uri) {
+        this.uri = uri;
+    }
 }
