@@ -4,7 +4,13 @@
 public class Tokenizer {
 
 
-    public void tokenize(Document document){
+    private String datastream;
+
+    public Tokenizer(String datastream){
+        this.datastream = datastream;
+    }
+
+    public void tokenize(){
 
     }
 
