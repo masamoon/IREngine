@@ -1,0 +1,123 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[margin=1in]{geometry}
+\usepackage[british,english]{babel}
+\usepackage{titlesec} 
+\usepackage{color}
+\usepackage[export]{adjustbox}
+\usepackage[hidelinks]{hyperref}
+\usepackage{mathtools}
+\usepackage{caption}
+\usepackage{listings}
+\DeclareCaptionFont{white}{ \color{white} }
+\DeclareCaptionFormat{listing}{
+  \colorbox[cmyk]{0.43, 0.35, 0.35,0.01 }{
+    \parbox{\textwidth}{\hspace{15pt}#1#2#3}
+  }
+}
+
+\titleformat{\chapter}[block]
+  {\normalfont\huge\bfseries}{\thechapter.}{1em}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{15pt}
+%Gummi|065|=)
+\title{\huge \textbf{Information Retrieval Engine}\\[0.2ex]
+\large Assignment 1 - Report\\[1ex]
+\large Information Retrieval - 2016/2017}
+\author{\large Andr\'e Lopes - 67833\\[1ex]
+        Raquel Rocha - 62196}
+
+\date{\large October 5, 2016}
+\usepackage{graphicx}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\scriptsize\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                     
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,     
+    numbers=left,
+  	numbersep=3pt,
+    tabsize=2,
+	framexleftmargin=10pt,
+	framexrightmargin=6pt,
+	escapeinside={(*@}{@*)} 
+}
+ 
+\lstset{style=mystyle}
+\begin{document}
+\makeatletter
+    \begin{titlepage}
+        	\vspace*{\fill}
+        \begin{center}
+            {\@title }\\[2ex] 
+            {\@author}\\[2ex] 
+            {\@date}\\[5ex]
+			\includegraphics[scale=0.8]{deti_logo.png}
+        \end{center}
+        
+        	\vspace*{\fill}
+    \end{titlepage}
+\makeatother
+\hypersetup{
+    colorlinks,bookmarks=true,linktoc=all
+}
+
+\renewcommand*\contentsname{Table of Contents}
+%\renewcommand\lstlistlistingname{List of Code}
+\tableofcontents
+\vspace{2cm}
+%\begingroup
+%\let\clearpage\relax
+%\lstlistoflistings
+%\endgroup
+\setcounter{secnumdepth}{2}
+\chapter{Introduction}
+
+Information retrieval is the act of collecting information from various sources, which main principle is querying the information gathered. A big example of information retrieval is Google, where a user inputs a set of keywords and gets the respective results ranked by relevance - this is called an information retrieval search engine, which is the objective of this assignment.\\\\
+This report explains the structure of this assignment, in terms of class estructure and data flow of the engine. 
+
+\vspace{2cm}
+{\let\clearpage\relax \chapter{Modelling}}
+%\chapter{Modelling}
+In order to model the structure of the search engine, there was a need to better understand each component:
+\begin{itemize}
+\item Document Processor
+\begin{itemize}
+\item[\textperiodcentered]Opens each document to collect data (in Corpus Reader)
+\end{itemize}
+\item Corpus Reader
+\begin{itemize}
+\item[\textperiodcentered]Reads the data in each document processed by the Document Processor, according to its format
+\end{itemize}
+\item Tokenizer
+\begin{itemize}
+\item[\textperiodcentered]Divides the data collected in terms, removing stopwords, stemming and other text transformations needed
+\end{itemize}
+\item Indexer
+\begin{itemize}
+\item[\textperiodcentered]Indexes each term with a reference to the documents it belongs (postings lists)
+\end{itemize}
+\item Searcher
+\begin{itemize}
+\item[\textperiodcentered]Retrieves the documents that contain the queries token from the index
+\end{itemize}
+\end{itemize}
+\pagebreak
+\section{Class Diagram}
+INSERT PICTURE HERE
+\subsection{Data Flow}
+Explicacao do class diagram (como é q os diferentes modulos funcionam)
+
+
+\end{document}
