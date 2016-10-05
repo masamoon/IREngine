@@ -4,8 +4,8 @@
 public class Tokenizer {
 
 
-    public void tokenize(Document document, Indexer indexer){
-        indexer.index();
+    public void tokenize(Document document){
+
     }
 
     public void stopping(){}

@@ -10,6 +10,6 @@ public class Reader {
     }
 
     public void read(Document document){
-        tokenizer.tokenize(document,indexer);
+
     }
 }
