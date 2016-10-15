@@ -7,9 +7,12 @@ public class Tokenizer {
     private String dataStream;
     private Set<String> tokens;
 
+    StopwordSet stopwordSet;
+
     public Tokenizer(String dataStream){
         this.dataStream = dataStream;
         this.tokens = new HashSet<>();
+        this.stopwordSet = new StopwordSet();
 
         tokenize();
         stopping();
@@ -24,7 +27,14 @@ public class Tokenizer {
 
     }
 
-    private void stopping(){}
+    private void stopping(){
+
+        for(String t : tokens){
+            if (stopwordSet.contains(t)){
+                tokens.remove(t);
+            }
+        }
+    }
 
     private void stemming(){}
 
