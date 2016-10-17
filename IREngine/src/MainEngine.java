@@ -4,7 +4,7 @@ import java.util.List;
 public class MainEngine {
 
     public static void main(String[] args){
-        URI uri = URI.create("xpto");
+        URI uri = URI.create("documents");
         CorpusReader crd = new CorpusReader(uri);
         List<DocumentProcessor> dps = crd.getDocumentProcessors();
         Indexer idx = new Indexer();

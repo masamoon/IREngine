@@ -22,6 +22,7 @@ public class Tokenizer {
 
     private void tokenize(){
         Scanner sc = new Scanner(dataStream);
+
         while(sc.hasNext())
             tokens.add(sc.next());
 
@@ -36,7 +37,9 @@ public class Tokenizer {
         }
     }
 
-    private void stemming(){}
+    private void stemming(){
+
+    }
 
 
     public Set<String> getTokens() {
