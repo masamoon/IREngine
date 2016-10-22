@@ -1,4 +1,6 @@
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,17 @@ public class StopwordSet {
     ArrayList<String> stopwords = new ArrayList<String>();
 
     public StopwordSet(){
-        File f = new File("stopwords_english.txt");
+        URL path = this.getClass().getResource("stopwords_english.txt");
+        if(path==null) {
+            System.out.print("stopword list not found");
+        }
+
+        File f = null;
+        try {
+            f = new File(path.toURI());
+        }catch(URISyntaxException e){
+            e.printStackTrace();
+        }
 
         try {
             String line = null;
