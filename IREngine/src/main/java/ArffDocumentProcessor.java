@@ -1,63 +1,59 @@
 import java.io.*;
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by Andre on 17/10/2016.
- */
 public class ArffDocumentProcessor {
 
-    private ArrayList<Document> documents;
+    private List<Document> documents;
 
 
-    public ArffDocumentProcessor(File file){
-        this.documents = new ArrayList<Document>();
+    public ArffDocumentProcessor(File file) {
+        this.documents = new ArrayList<>();
         try {
             String line = null;
             BufferedReader br = new BufferedReader(new FileReader(file));
 
             while ((line = br.readLine()) != null) {
 
-                if (!line.isEmpty()){
+                if (!line.isEmpty()) {
                     if (line.charAt(0) != '@') {
 
 
-
-                      //  System.out.println("line = " + line);
+                        //  System.out.println("line = " + line);
                         Pattern p1 = Pattern.compile("\"([^\"]*)\""); // get text between quotation marks
                         Pattern p2 = Pattern.compile("(?<!\\d)\\d{8}+(?!\\d)"); //get every occurrence of 8 numbers (doc id)
                         Matcher m1 = p1.matcher(line);
                         Matcher m2 = p2.matcher(line);
                         while (m2.find() && m1.find()) {
-                       //     System.out.println(m2.group(0));
+                            //     System.out.println(m2.group(0));
                             String[] words = m1.group(0).replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+"); //remove puncuation all lower case
                             StringBuilder builder = new StringBuilder();
-                            for(String s : words) {
-                                builder.append(" "+s);
+                            for (String s : words) {
+                                builder.append(" ").append(s);
                             }
                             String clean_line = builder.toString();
                             Document document = new Document(Integer.parseInt(m2.group(0)), clean_line, file.toURI());
                             this.documents.add(document);
-                        //    System.out.print(this.documents.get(0));
+                            //    System.out.print(this.documents.get(0));
 
                         }
 
                     }
-                 }
+                }
             }
 
 
-        }catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    public ArrayList<Document> process(){
+    public List<Document> process() {
 
         return this.documents;
     }

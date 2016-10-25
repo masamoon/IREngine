@@ -3,7 +3,8 @@ import java.io.File;
 public class TxtDocumentProcessor implements DocumentProcessor {
 
     private Document document;
-    public TxtDocumentProcessor(File file){
+
+    public TxtDocumentProcessor(File file) {
 
     }
 

@@ -1,13 +1,15 @@
 import java.io.File;
-public class PdfDocumentProcessor implements DocumentProcessor{
+
+public class PdfDocumentProcessor implements DocumentProcessor {
 
     private Document document;
-    public PdfDocumentProcessor(File file){
+
+    public PdfDocumentProcessor(File file) {
 
     }
 
     @Override
-    public Document process(){
+    public Document process() {
         return document;
     }
 }

@@ -1,7 +1,9 @@
 public class Searcher {
 
-    public Searcher(){}
+    public Searcher() {
+    }
 
-    public void query(){}
+    public void query() {
+    }
 
 }
