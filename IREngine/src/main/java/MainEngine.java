@@ -25,15 +25,20 @@ public class MainEngine {
         ArffDocumentProcessor dps = new ArffDocumentProcessor(file);
         ArrayList<Document> docs = dps.process();
 
+        Indexer idx = new Indexer();
 
         for(Document doc : docs) {
 
             Tokenizer tokenizer = new Tokenizer(doc.getDataStream());
 
 
+            for(String token : tokenizer.getTokens()){
+                idx.index(doc, token);
+            }
+
         }
 
-
+        idx.printIndex();
 
 
 

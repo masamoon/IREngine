@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Indexer {
 
-    private Map<String,Map<Integer, List<Integer>>> index;
+    private Map<String,Map<Integer,Integer>> index;
 
 
 
@@ -18,33 +18,29 @@ public class Indexer {
 
     public void index(Document doc, String token){
 
-        if(index.containsKey(token)){
+        if(index.containsKey(token)) {
 
-            Map<Integer,List<Integer>> entry = index.get(token);
+            Map<Integer, Integer> entry = index.get(token);
 
-            for(Map.Entry<Integer,List<Integer>> nested_entry : index.get(token).entrySet()){
+            if (entry.containsKey(doc.getId())) {
 
-                List<Integer> list = nested_entry.getValue();
-                list.add(doc.getId());
-                Integer occurrences = nested_entry.getKey();
-                occurrences +=1;
-                entry.put(occurrences,list);
+                Integer occurr = entry.get(doc.getId());
+                occurr += 1;
+                entry.replace(doc.getId(), occurr);
 
-                index.put(token,entry);
-
+            } else {
+                entry.put(doc.getId(), 1);
             }
+
+            index.replace(token,entry);
+
 
         }
         else{
-            Map<Integer,List<Integer>> newentry = new HashMap<Integer, List<Integer>>();
-            ArrayList<Integer> list = new ArrayList<Integer>();
-            list.add(doc.getId());
-            newentry.put(1,list);
+            Map<Integer,Integer> newentry = new HashMap<Integer,Integer>();
+            newentry.put(doc.getId(),1);
             index.put(token,newentry);
-
         }
-
-
     }
 
 
@@ -56,12 +52,12 @@ public class Indexer {
         //TODO: use Gson to load previous stored structure (index)
     }
 
-    private void printIndex() {
-        for (Map.Entry<String, Map<Integer, List<Integer>>> entry : index.entrySet()) {
+    public void printIndex() {
+        for (Map.Entry<String, Map<Integer, Integer>> entry : index.entrySet()) {
 
-            for (Map.Entry<Integer, List<Integer>> nested_entry : entry.getValue().entrySet()) {
-
-                System.out.println(nested_entry.getKey() + " : " + nested_entry.getValue());
+            for (Map.Entry<Integer, Integer> nested_entry : entry.getValue().entrySet()) {
+                if(nested_entry.getValue() > 1)
+                    System.out.println(entry.getKey()+ " : " +nested_entry.getKey() + " : " + nested_entry.getValue());
 
             }
         }

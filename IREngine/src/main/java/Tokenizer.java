@@ -30,7 +30,7 @@ public class Tokenizer {
             stem_tokens.add(stem_token);
 
         }
-        printTokens();
+        //printTokens();
 
     }
 
@@ -78,7 +78,7 @@ public class Tokenizer {
 
 
     public Set<String> getTokens() {
-        return tokens;
+        return stem_tokens;
     }
 
     public void printTokens(){
