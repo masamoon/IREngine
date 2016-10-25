@@ -56,7 +56,7 @@ public class Indexer {
         for (Map.Entry<String, Map<Integer, Integer>> entry : index.entrySet()) {
 
             for (Map.Entry<Integer, Integer> nested_entry : entry.getValue().entrySet()) {
-                if(nested_entry.getValue() > 1)
+                if(nested_entry.getValue() > 0)
                     System.out.println(entry.getKey()+ " : " +nested_entry.getKey() + " : " + nested_entry.getValue());
 
             }
