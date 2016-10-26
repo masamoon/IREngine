@@ -37,14 +37,16 @@ public class MainEngine {
          */
         for (DocumentProcessor dp : dps) {
 
-            Document doc = dp.process();
-            //System.out.println(doc.getDataStream());
-            Tokenizer tokenizer = new Tokenizer(doc.getDataStream());
-            //System.out.println(doc.getUri() + " - " + doc.getId());
-            for (String token : tokenizer.getTokens()) {
-                idx.index(doc, token);
+            List<Document> doc = dp.process();
+            for (Document d: doc) {
+                //    System.out.println(d.getDataStream());
+                //System.out.println(doc.getDataStream());
+                Tokenizer tokenizer = new Tokenizer(d.getDataStream());
+                //System.out.println(doc.getUri() + " - " + doc.getId());
+                for (String token : tokenizer.getTokens()) {
+                    idx.index(d, token);
+                }
             }
-
         }
 
         idx.printIndex();

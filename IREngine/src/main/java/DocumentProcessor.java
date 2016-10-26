@@ -6,10 +6,12 @@
  * Raquel Rocha - 62196
  */
 
+import java.util.List;
+
 /**
  * Document Processor interface.
  */
 public interface DocumentProcessor {
 
-    Document process();
+    List<Document> process();
 }

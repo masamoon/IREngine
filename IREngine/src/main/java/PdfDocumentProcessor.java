@@ -1,15 +1,16 @@
 import java.io.File;
+import java.util.List;
 
 public class PdfDocumentProcessor implements DocumentProcessor {
 
-    private Document document;
+    private List<Document> documents;
 
     public PdfDocumentProcessor(File file) {
 
     }
 
 
-    public Document process() {
-        return document;
+    public List<Document> process() {
+        return documents;
     }
 }

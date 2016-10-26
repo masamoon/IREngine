@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,16 +18,17 @@ import java.util.regex.Pattern;
  */
 public class ArffDocumentProcessor implements DocumentProcessor {
 
-    private Document document;
+    private List<Document> documents;
 
     /**
      * ArffDocumentProcessor class constructor.
-     * Parses the file so it can generate a document with the
+     * Parses the file so it can generate a documents with the
      * respective identifier, data stream and URI.
      *
      * @param file file to process
      */
     public ArffDocumentProcessor(File file) {
+        this.documents = new ArrayList<>();
         try {
             String line = null;
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -48,7 +51,8 @@ public class ArffDocumentProcessor implements DocumentProcessor {
                                 builder.append(" ").append(s);
                             }
                             String clean_line = builder.toString();
-                            this.document = new Document(Integer.parseInt(doc_id), clean_line, file.toURI());
+                            Document doc = new Document(Integer.parseInt(doc_id), clean_line, file.toURI());
+                            this.documents.add(doc);
                             //    System.out.print(this.documents.get(0));
 
                         }
@@ -68,11 +72,11 @@ public class ArffDocumentProcessor implements DocumentProcessor {
 
 
     /**
-     * Returns the processed document.
+     * Returns the processed documents.
      *
-     * @return processed document
+     * @return processed documents
      */
-    public Document process() {
-        return this.document;
+    public List<Document> process() {
+        return this.documents;
     }
 }
