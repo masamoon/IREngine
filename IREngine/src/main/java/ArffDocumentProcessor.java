@@ -39,7 +39,7 @@ public class ArffDocumentProcessor implements DocumentProcessor {
                         //Matcher m2 = p2.matcher(line);
                         String[] doc_id_split = line.split(",");
                         String doc_id = doc_id_split[0];
-
+                        System.out.println(doc_id);
                         while (m1.find()) {
                             //     System.out.println(m2.group(0));
                             String[] words = m1.group(0).replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+"); //remove puncuation all lower case
