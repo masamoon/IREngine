@@ -20,7 +20,7 @@ import java.util.Set;
 public class Tokenizer {
 
     StopwordSet stopwordSet;
-    englishStemmer stem = new englishStemmer();
+    //englishStemmer stem = new englishStemmer();
     private String dataStream;
     private Set<String> tokens;
 
@@ -67,15 +67,23 @@ public class Tokenizer {
         Iterator<String> it = tokens.iterator();
         while (it.hasNext()) {
             try {
-                stem = new englishStemmer();
+                /*stem = new englishStemmer();
                 stem.setCurrent(it.next());
-                stem.stem();
-                aux.add(stem.getCurrent());
+                stem.stem();*/
+                aux.add(stem(it.next()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         tokens = aux;
+    }
+
+    public static String stem(String a){
+        englishStemmer stema = new englishStemmer();
+        stema.setCurrent(a);
+        stema.stem();
+
+        return stema.getCurrent();
     }
 
 

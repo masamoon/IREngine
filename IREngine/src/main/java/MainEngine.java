@@ -18,7 +18,7 @@ public class MainEngine {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/documents";
+        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/documents/AA_pmids_tagged.arff";
 
         /**
          * Execution:
@@ -38,7 +38,9 @@ public class MainEngine {
         for (DocumentProcessor dp : dps) {
 
             Document doc = dp.process();
+            //System.out.println(doc.getDataStream());
             Tokenizer tokenizer = new Tokenizer(doc.getDataStream());
+            //System.out.println(doc.getUri() + " - " + doc.getId());
             for (String token : tokenizer.getTokens()) {
                 idx.index(doc, token);
             }
