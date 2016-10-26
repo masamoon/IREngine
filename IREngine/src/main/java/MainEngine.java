@@ -1,6 +1,4 @@
-import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 public class MainEngine {
@@ -13,17 +11,16 @@ public class MainEngine {
         List<DocumentProcessor> dps = crd.getDocumentProcessors();
 
         Indexer idx = new Indexer();
-        for(DocumentProcessor dp: dps)
-        {
+        for (DocumentProcessor dp : dps) {
 
             Document doc = dp.process();
             Tokenizer tokenizer = new Tokenizer(doc.getDataStream());
-            for(String token : tokenizer.getTokens()){
+            for (String token : tokenizer.getTokens()) {
                 idx.index(doc, token);
             }
 
         }
 
-        //idx.printIndex();
+        idx.printIndex();
     }
 }

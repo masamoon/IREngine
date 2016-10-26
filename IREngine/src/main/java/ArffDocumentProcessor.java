@@ -40,9 +40,6 @@ public class ArffDocumentProcessor implements DocumentProcessor {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (NullPointerException e){
-            System.out.println("fodeu");
-            e.printStackTrace();
         }
 
     }

@@ -1,4 +1,5 @@
 import org.tartarus.snowball.ext.englishStemmer;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;

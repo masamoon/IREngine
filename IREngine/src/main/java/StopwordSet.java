@@ -31,7 +31,7 @@ public class StopwordSet {
             return false;
     }
 
-    public Set getSet(){
+    public Set getSet() {
         return stopwords;
     }
 }
