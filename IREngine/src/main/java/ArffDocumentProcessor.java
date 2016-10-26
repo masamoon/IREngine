@@ -1,26 +1,18 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ArffDocumentProcessor {
+public class ArffDocumentProcessor implements DocumentProcessor {
 
-    private List<Document> documents;
-
+    private Document document;
 
     public ArffDocumentProcessor(File file) {
-        this.documents = new ArrayList<>();
         try {
             String line = null;
             BufferedReader br = new BufferedReader(new FileReader(file));
-
             while ((line = br.readLine()) != null) {
-
                 if (!line.isEmpty()) {
                     if (line.charAt(0) != '@') {
-
-
                         //  System.out.println("line = " + line);
                         Pattern p1 = Pattern.compile("\"([^\"]*)\""); // get text between quotation marks
                         Pattern p2 = Pattern.compile("(?<!\\d)\\d{8}+(?!\\d)"); //get every occurrence of 8 numbers (doc id)
@@ -34,8 +26,7 @@ public class ArffDocumentProcessor {
                                 builder.append(" ").append(s);
                             }
                             String clean_line = builder.toString();
-                            Document document = new Document(Integer.parseInt(m2.group(0)), clean_line, file.toURI());
-                            this.documents.add(document);
+                            this.document = new Document(Integer.parseInt(m2.group(0)), clean_line, file.toURI());
                             //    System.out.print(this.documents.get(0));
 
                         }
@@ -49,12 +40,15 @@ public class ArffDocumentProcessor {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NullPointerException e){
+            System.out.println("fodeu");
+            e.printStackTrace();
         }
 
     }
 
-    public List<Document> process() {
 
-        return this.documents;
+    public Document process() {
+        return this.document;
     }
 }
