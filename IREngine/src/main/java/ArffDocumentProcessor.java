@@ -45,7 +45,7 @@ public class ArffDocumentProcessor implements DocumentProcessor {
                         //System.out.println(doc_id);
                         while (m1.find()) {
                             //     System.out.println(m2.group(0));
-                            String[] words = m1.group(0).replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+"); //remove puncuation all lower case
+                            String[] words = m1.group(0).replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+"); //remove puncuation all lower case
                             StringBuilder builder = new StringBuilder();
                             for (String s : words) {
                                 builder.append(" ").append(s);

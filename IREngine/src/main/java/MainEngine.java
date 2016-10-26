@@ -18,7 +18,8 @@ public class MainEngine {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/documents/AA_pmids_tagged.arff";
+        long startTime = System.nanoTime();
+        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/";
 
         /**
          * Execution:
@@ -38,8 +39,9 @@ public class MainEngine {
         for (DocumentProcessor dp : dps) {
 
             List<Document> doc = dp.process();
+
             for (Document d: doc) {
-                //    System.out.println(d.getDataStream());
+                  //    System.out.println(d.getDataStream());
                 //System.out.println(doc.getDataStream());
                 Tokenizer tokenizer = new Tokenizer(d.getDataStream());
                 //System.out.println(doc.getUri() + " - " + doc.getId());
@@ -49,6 +51,10 @@ public class MainEngine {
             }
         }
 
-        idx.printIndex();
+        //idx.printIndex();
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        System.out.println(duration);
+        System.out.println(String.format("Runtime: %.4f seconds\n",(float)duration/1000000000));
     }
 }
