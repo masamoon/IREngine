@@ -20,7 +20,7 @@ public class MainEngine {
     public static void main(String[] args) {
 
         //Small smaple corpus
-        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/sample/AA_pmids_tagged.arff";
+        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/sample/";
         //Big sample corpus
         //String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/";
 
