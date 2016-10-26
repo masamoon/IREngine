@@ -2,10 +2,29 @@ import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Aveiro University, Department of Electronics, Telecommunications and Informatics.
+ * MIECT - Information Retrieval
+ * 2016/2017
+ * Andre Lopes - 67833
+ * Raquel Rocha - 62196
+ */
+
+/**
+ * ArffDocumentProcessor data type.
+ * Responsible for processing the files of extension arff.
+ */
 public class ArffDocumentProcessor implements DocumentProcessor {
 
     private Document document;
 
+    /**
+     * ArffDocumentProcessor class constructor.
+     * Parses the file so it can generate a document with the
+     * respective identifier, data stream and URI.
+     *
+     * @param file file to process
+     */
     public ArffDocumentProcessor(File file) {
         try {
             String line = null;
@@ -48,6 +67,11 @@ public class ArffDocumentProcessor implements DocumentProcessor {
     }
 
 
+    /**
+     * Returns the processed document.
+     *
+     * @return processed document
+     */
     public Document process() {
         return this.document;
     }
