@@ -18,7 +18,8 @@ public class MainEngine {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
+        /* Runtime: uncomment the line below */
+        //long startTime = System.nanoTime();
         //Small smaple corpus
         String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/sample/";
         //Big sample corpus
@@ -67,5 +68,12 @@ public class MainEngine {
         //Example to get document frequency for a term
         System.out.println("Document frequency for the term \"ammonia\":" + idx.getDocFrequency("ammonia"));
         */
+
+        /* Runtime: uncomment the lines below */
+        /*
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        String.format("Duration: %.4d sec\n",float(duration)/1000000000);
+         */
     }
 }
