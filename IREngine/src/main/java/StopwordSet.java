@@ -1,26 +1,14 @@
 import java.io.*;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-/**
- * Created by Andre on 16/10/2016.
- */
+
 public class StopwordSet {
-    /* TODO:
-    * Modificar de List para Set
-    * Get (devolver o Set)
-     */
 
-    ArrayList<String> stopwords = new ArrayList<String>();
+    Set<String> stopwords = new HashSet<>();
 
     public StopwordSet() {
-
-        /*URL path = this.getClass().getResource("documents/stopwords_english.txt");
-        if(path==null) {
-            System.out.print("stopword list not found");
-        }*/
-
-        File f = new File("./documents/stopwords_english.txt");
-
+        File f = new File("./resources/stopwords_english.txt");
         try {
             String line = null;
             BufferedReader br = new BufferedReader(new FileReader(f));
@@ -33,8 +21,6 @@ public class StopwordSet {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
@@ -43,5 +29,9 @@ public class StopwordSet {
             return true;
         else
             return false;
+    }
+
+    public Set getSet(){
+        return stopwords;
     }
 }

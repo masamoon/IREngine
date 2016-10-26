@@ -24,6 +24,6 @@ public class MainEngine {
 
         }
 
-        idx.printIndex();
+        //idx.printIndex();
     }
 }
