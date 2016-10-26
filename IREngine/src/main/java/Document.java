@@ -14,7 +14,7 @@ public class Document {
         this.uri = uri;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

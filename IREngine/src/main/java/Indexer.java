@@ -1,10 +1,13 @@
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class Indexer {
 
     private Map<String, Map<Integer, Integer>> index;
+    private Map<String,Integer> total_occurr;
 
 
     public Indexer() {
@@ -18,13 +21,16 @@ public class Indexer {
 
     public void index(Document doc, String token) {
 
+
         if (index.containsKey(token)) {
 
             Map<Integer, Integer> entry = index.get(token);
 
+
             if (entry.containsKey(doc.getId())) {
                 /*Integer occurr = entry.get(doc.getId());
                 occurr += 1;*/
+
                 entry.replace(doc.getId(), entry.get(doc.getId()) + 1);
 
             } else {
@@ -54,7 +60,7 @@ public class Indexer {
         for (Map.Entry<String, Map<Integer, Integer>> entry : index.entrySet()) {
 
             for (Map.Entry<Integer, Integer> nested_entry : entry.getValue().entrySet()) {
-                if (nested_entry.getValue() > 0)
+                if (nested_entry.getValue() > 1)
                     System.out.println(entry.getKey() + " : " + nested_entry.getKey() + " : " + nested_entry.getValue());
 
             }

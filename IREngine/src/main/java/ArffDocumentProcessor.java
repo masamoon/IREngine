@@ -15,10 +15,13 @@ public class ArffDocumentProcessor implements DocumentProcessor {
                     if (line.charAt(0) != '@') {
                         //  System.out.println("line = " + line);
                         Pattern p1 = Pattern.compile("\"([^\"]*)\""); // get text between quotation marks
-                        Pattern p2 = Pattern.compile("(?<!\\d)\\d{8}+(?!\\d)"); //get every occurrence of 8 numbers (doc id)
+                        //Pattern p2 = Pattern.compile("(?<!\\d)\\d{8}+(?!\\d)"); //get every occurrence of 8 numbers (doc id)
                         Matcher m1 = p1.matcher(line);
-                        Matcher m2 = p2.matcher(line);
-                        while (m2.find() && m1.find()) {
+                        //Matcher m2 = p2.matcher(line);
+                        String[] doc_id_split = line.split(",");
+                        String doc_id = doc_id_split[0];
+
+                        while (m1.find()) {
                             //     System.out.println(m2.group(0));
                             String[] words = m1.group(0).replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+"); //remove puncuation all lower case
                             StringBuilder builder = new StringBuilder();
@@ -26,7 +29,7 @@ public class ArffDocumentProcessor implements DocumentProcessor {
                                 builder.append(" ").append(s);
                             }
                             String clean_line = builder.toString();
-                            this.document = new Document(Integer.parseInt(m2.group(0)), clean_line, file.toURI());
+                            this.document = new Document(Integer.parseInt(doc_id), clean_line, file.toURI());
                             //    System.out.print(this.documents.get(0));
 
                         }
