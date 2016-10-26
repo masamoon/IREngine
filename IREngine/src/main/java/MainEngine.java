@@ -18,8 +18,11 @@ public class MainEngine {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        long startTime = System.nanoTime();
-        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/";
+
+        //Small smaple corpus
+        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/sample/AA_pmids_tagged.arff";
+        //Big sample corpus
+        //String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/";
 
         /**
          * Execution:
@@ -41,20 +44,28 @@ public class MainEngine {
             List<Document> doc = dp.process();
 
             for (Document d: doc) {
-                  //    System.out.println(d.getDataStream());
-                //System.out.println(doc.getDataStream());
                 Tokenizer tokenizer = new Tokenizer(d.getDataStream());
-                //System.out.println(doc.getUri() + " - " + doc.getId());
                 for (String token : tokenizer.getTokens()) {
                     idx.index(d, token);
                 }
+
             }
         }
 
-        //idx.printIndex();
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
-        System.out.println(duration);
-        System.out.println(String.format("Runtime: %.4f seconds\n",(float)duration/1000000000));
+        idx.getBooleanIndex();
+        /* Examples of index operations */
+        /*
+        //Print full index
+        idx.printIndex();
+
+        //Examples of boolean index query
+        System.out.println("Contains the term ammonia? " + (idx.contains("ammonia")? "yes":"no"));
+        System.out.println("Contains the term raquel? " + (idx.contains("raquel")? "yes":"no"));
+
+        System.out.println("Contains the term effect in the document with id 20308399?" + (idx.contains("effect",20308399)? "yes":"no"));
+        System.out.println("Contains the term effect in the document with id 210308399?" + (idx.contains("effect",210308399)? "yes":"no"));
+        //Example to get document frequency for a term
+        System.out.println("Document frequency for the term \"ammonia\":" + idx.getDocFrequency("ammonia"));
+        */
     }
 }
