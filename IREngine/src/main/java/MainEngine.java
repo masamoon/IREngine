@@ -19,7 +19,7 @@ public class MainEngine {
      */
     public static void main(String[] args) {
         /* Runtime: uncomment the line below */
-        //long startTime = System.nanoTime();
+        long startTime = System.nanoTime();
         //Small smaple corpus
         String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/sample/";
         //Big sample corpus
@@ -36,6 +36,7 @@ public class MainEngine {
         List<DocumentProcessor> dps = crd.getDocumentProcessors();
 
         Indexer idx = new Indexer();
+        Tokenizer tokenizer = new Tokenizer();
         /**
          * Iterate through the Document Processors to
          * Process, tokenize and index each document
@@ -45,13 +46,10 @@ public class MainEngine {
             List<Document> doc = dp.process();
 
             for (Document d: doc) {
-                Tokenizer tokenizer = new Tokenizer(d.getDataStream());
-                for (String token : tokenizer.getTokens()) {
-                    idx.index(d, token);
-                }
-
+                tokenizer.tokenize(d);
             }
         }
+        idx.index(tokenizer.getTokens());
 
         idx.getBooleanIndex();
         /* Examples of index operations */
@@ -70,10 +68,9 @@ public class MainEngine {
         */
 
         /* Runtime: uncomment the lines below */
-        /*
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
-        String.format("Duration: %.4d sec\n",float(duration)/1000000000);
-         */
+        System.out.println(String.format("Duration: %.4f sec\n",(float)duration/1000000000));
+
     }
 }
