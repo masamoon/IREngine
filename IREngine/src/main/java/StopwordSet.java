@@ -48,10 +48,7 @@ public class StopwordSet {
      * @return 1 if contains, 0 otherwise.
      */
     public boolean contains(String word) {
-        if (stopwords.contains(word))
-            return true;
-        else
-            return false;
+        return stopwords.contains(word);
     }
 
     /**

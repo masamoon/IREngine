@@ -33,7 +33,7 @@ public class MainEngine {
          */
         URI uri = URI.create(path);
         CorpusReader crd = new CorpusReader(uri);
-        List<DocumentProcessor> dps = crd.getDocumentProcessors();
+        List<Document> dsp = crd.getProcessedDocuments();
 
         Indexer idx = new Indexer();
         Tokenizer tokenizer = new Tokenizer();
@@ -41,22 +41,19 @@ public class MainEngine {
          * Iterate through the Document Processors to
          * Process, tokenize and index each document
          */
-        for (DocumentProcessor dp : dps) {
+        for (Document d : dsp) {
+            tokenizer.tokenize(d);
 
-            List<Document> doc = dp.process();
-
-            for (Document d: doc) {
-                tokenizer.tokenize(d);
-            }
         }
         idx.index(tokenizer.getTokens());
-
+        //tokenizer.printTokens();
         idx.getBooleanIndex();
         /* Examples of index operations */
-        /*
-        //Print full index
-        idx.printIndex();
 
+
+        //Print full index
+        //idx.printIndex();
+/*
         //Examples of boolean index query
         System.out.println("Contains the term ammonia? " + (idx.contains("ammonia")? "yes":"no"));
         System.out.println("Contains the term raquel? " + (idx.contains("raquel")? "yes":"no"));
@@ -65,12 +62,12 @@ public class MainEngine {
         System.out.println("Contains the term effect in the document with id 210308399?" + (idx.contains("effect",210308399)? "yes":"no"));
         //Example to get document frequency for a term
         System.out.println("Document frequency for the term \"ammonia\":" + idx.getDocFrequency("ammonia"));
-        */
+*/
 
         /* Runtime: uncomment the lines below */
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
-        System.out.println(String.format("Duration: %.4f sec\n",(float)duration/1000000000));
+        System.out.println(String.format("Duration: %.4f sec\n", (float) duration / 1000000000));
 
     }
 }
