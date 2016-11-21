@@ -48,6 +48,8 @@ public class MainEngine {
         idx.index(tokenizer.getTokens());
         //tokenizer.printTokens();
         idx.getBooleanIndex();
+        idx.tfIdfIndex(tokenizer.getNumTokens());
+        idx.printTfIdIndex();
         /* Examples of index operations */
 
 

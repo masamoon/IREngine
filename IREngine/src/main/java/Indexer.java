@@ -1,6 +1,7 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ public class Indexer {
 
     private Map<String,Map<Integer,Double>> tfidf_index; // term -> map < doc_id , weight >
 
+    private Map<Integer,Integer> num_tokens; // docid -> num_tokens
     public int num_docs;
 
 
@@ -46,26 +48,53 @@ public class Indexer {
         }
     }
 
-    public void tfIdfIndex(){
+    public void tfIdfIndex(Map<Integer,Integer> num_tokens){
         //termo , doc, peso da pesquisa (tf), posicao no doc
         //LTC.LNC policy
 
-        for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()){
+        ArrayList<Double> tfs = new ArrayList<>();
 
-            for(Map.Entry<Integer,List<Integer>> docs : entry.getValue().entrySet()){
+        for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {
 
-                String token = entry.getKey();
+            String token = entry.getKey();
+
+            tfidf_index.put(token,new HashMap<>());
+            Map<Integer,Double> tf_entry = tfidf_index.get(token);
+
+
+
+            for (Map.Entry<Integer, List<Integer>> docs : entry.getValue().entrySet()) {
                 int doc_id = docs.getKey();
-                double t_frequency = 1+ Math.log10(index.get(token).get(doc_id).size()); // term frequency in doc
-                int d_frequency = 1;//getDocFrequency(token); // document frequency of term
+                double t_frequency = 1 + Math.log10(index.get(token).get(doc_id).size()) / num_tokens.get(doc_id); // term frequency
+                tfs.add(t_frequency);
+                tf_entry.put(doc_id,t_frequency);
 
-                double idf = Math.log10(num_docs/(d_frequency));
-                double tf_idf = t_frequency * idf;
-                tfidf_index.put(token, new HashMap<>());
+            }
 
-                Map<Integer, Double> doc_list_freq = tfidf_index.get(token);
-                doc_list_freq.put(doc_id,tf_idf);
+            double norm=0;
 
+            for(Double tf: tfs){
+                norm += Math.pow(tf,2);
+            }
+
+            norm = Math.sqrt(norm);
+
+            for (Map.Entry<Integer, Double> to_normalize : tf_entry.entrySet()) {
+
+                to_normalize.setValue(to_normalize.getValue()/norm);
+
+            }
+
+
+        }
+
+    }
+
+    public void printTfIdIndex(){
+
+        for(Map.Entry<String,Map<Integer,Double>> entry : tfidf_index.entrySet()){
+            for(Map.Entry<Integer,Double> nested_entry : entry.getValue().entrySet()){
+                System.out.println(entry.getKey()+" -> "+nested_entry.getKey()+" : "+nested_entry.getValue());
             }
         }
     }
