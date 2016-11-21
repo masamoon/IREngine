@@ -8,77 +8,29 @@
 
 import org.tartarus.snowball.ext.englishStemmer;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Tokenizer data type, which is responsible for generating tokens
- * from a given data stream.
+ * from a list of Documents
  */
 public class Tokenizer {
 
     StopwordSet stopwordSet;
-    //englishStemmer stem = new englishStemmer();
-    private String dataStream;
-    private Set<String> tokens;
+    private Map<String, Map<Integer, List<Integer>>> tokens; //tokens: token -> docid -> posiçoes
 
     /**
-     * Tokenizer class constructor. Tokenizes the given data stream and
-     * invokes the stopping and stemming operations.
-     *
-     * @param dataStream stream of data to tokenize
+     * Tokenizer class constructor.
      */
-    public Tokenizer(String dataStream) {
-        this.dataStream = dataStream;
-        this.tokens = new HashSet<>();
+    public Tokenizer() {
+        this.tokens = new HashMap<>();
         this.stopwordSet = new StopwordSet();
-
-        tokenize();
-        stopping();
-        stemming();
-
-    }
-
-    /**
-     * Iterates each word in the stream of data
-     * to generate the set of tokens.
-     */
-    private void tokenize() {
-        Scanner sc = new Scanner(dataStream);
-        while (sc.hasNext())
-            tokens.add(sc.next());
-    }
-
-    /**
-     * Removes all stop words from the set of
-     * tokens, based on the StopwordSet object.
-     */
-    private void stopping() {
-        tokens.removeAll(stopwordSet.getSet());
     }
 
     /**
      * Applies the stemming operation using the Porter Stemmer.
      */
-    private void stemming() {
-        Set<String> aux = new HashSet<>();
-        Iterator<String> it = tokens.iterator();
-        while (it.hasNext()) {
-            try {
-                /*stem = new englishStemmer();
-                stem.setCurrent(it.next());
-                stem.stem();*/
-                aux.add(stem(it.next()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        tokens = aux;
-    }
-
-    public static String stem(String a){
+    public static String stem(String a) {
         englishStemmer stema = new englishStemmer();
         stema.setCurrent(a);
         stema.stem();
@@ -86,13 +38,39 @@ public class Tokenizer {
         return stema.getCurrent();
     }
 
+    /**
+     * Iterates each word in the data stream of the
+     * doc to generate the set of tokens.
+     *
+     * @param doc Document to tokenize and stem
+     */
+    public void tokenize(Document doc) {
+        Scanner sc = new Scanner(doc.getDataStream());
+        String token;
+        int idx = 1;
+        while (sc.hasNext()) {
+            token = sc.next();
+            if (!stopwordSet.contains(token) && !stopwordSet.contains(stem(token))) { // to not tokenize the stopwords!!
+                token = stem(token);
+                if (!tokens.containsKey(token))
+                    tokens.put(token, new HashMap<>());
+
+                if (!tokens.get(token).containsKey(doc.getId()))
+                    tokens.get(token).put(doc.getId(), new ArrayList<>());
+
+                tokens.get(token).get(doc.getId()).add(idx);
+            }
+            idx++;
+        }
+        sc.close();
+    }
 
     /**
      * Retrieves the set of tokens.
      *
      * @return Set of strings.
      */
-    public Set<String> getTokens() {
+    public Map<String, Map<Integer, List<Integer>>> getTokens() {
         return tokens;
     }
 
@@ -100,8 +78,12 @@ public class Tokenizer {
      * Auxiliar function to print every token.
      */
     public void printTokens() {
-        for (String token : tokens) {
-            System.out.println(token);
+        System.out.println(tokens.entrySet().size());
+        for (Map.Entry<String, Map<Integer, List<Integer>>> entry : tokens.entrySet()) {
+            System.out.println(entry.getKey() + " : ");
+            for (Map.Entry<Integer, List<Integer>> nested_entry : entry.getValue().entrySet()) {
+                System.out.println("- " + nested_entry.getKey() + ": " + nested_entry.getValue());
+            }
         }
     }
 

@@ -13,5 +13,7 @@ import java.util.List;
  */
 public interface DocumentProcessor {
 
-    List<Document> process();
+    static List<Document> process() {
+        return null;
+    }
 }

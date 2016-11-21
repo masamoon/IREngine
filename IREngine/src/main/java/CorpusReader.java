@@ -18,17 +18,19 @@ import java.util.List;
 public class CorpusReader {
 
     private URI uri;
-    private List<DocumentProcessor> docsToProcess;
+    private List<Document> docsToProcess;
 
     /**
      * Corpus Reader class constructor.
      * Gets the URI of the directory/file to iterate.
-     *
-     * @param uri URI of the directory/file.
      */
-    public CorpusReader(URI uri) {
-        this.uri = uri;
+    public CorpusReader() {
         docsToProcess = new ArrayList<>();
+    }
+
+    public CorpusReader(URI uri) {
+        this();
+        this.uri = uri;
     }
 
     /**
@@ -39,7 +41,7 @@ public class CorpusReader {
      *
      * @return List of document processors.
      */
-    public List<DocumentProcessor> getDocumentProcessors() {
+    public List<Document> getProcessedDocuments() {
         File aux = new File(uri.getPath());
         if (aux.isDirectory()) {
             for (File file : aux.listFiles()) {
@@ -64,7 +66,7 @@ public class CorpusReader {
             String extension = path.substring(path.lastIndexOf(".") + 1);
             switch (extension) {
                 case "arff":
-                    docsToProcess.add(new ArffDocumentProcessor(file));
+                    docsToProcess.addAll(ArffDocumentProcessor.process(file));
                     break;
                 /*case "txt":
                     docsToProcess.add(new TxtDocumentProcessor(file));
@@ -73,6 +75,7 @@ public class CorpusReader {
                     docsToProcess.add(new TxtDocumentProcessor(file));
                     break;*/
             }
+
         }
     }
 
