@@ -36,6 +36,8 @@ public class MainEngine {
         List<DocumentProcessor> dps = crd.getDocumentProcessors();
 
         Indexer idx = new Indexer();
+
+
         /**
          * Iterate through the Document Processors to
          * Process, tokenize and index each document
@@ -48,12 +50,20 @@ public class MainEngine {
                 Tokenizer tokenizer = new Tokenizer(d.getDataStream());
                 for (String token : tokenizer.getTokens()) {
                     idx.index(d, token);
+                   // idx.tfIndex(d,token);
+
                 }
+                idx.incNumDocs();
 
             }
         }
 
         idx.getBooleanIndex();
+       // idx.getTfIndex();
+
+
+
+
         /* Examples of index operations */
         /*
         //Print full index
