@@ -167,5 +167,9 @@ public class Indexer {
         }
     }
 
+    public void incDocNum(){
+        num_docs++;
+    }
+
 
 }
