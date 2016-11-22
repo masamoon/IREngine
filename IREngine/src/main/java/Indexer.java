@@ -65,8 +65,9 @@ public class Indexer {
 
             for (Map.Entry<Integer, List<Integer>> docs : entry.getValue().entrySet()) {
                 int doc_id = docs.getKey();
-                double t_frequency = 1 + Math.log10(index.get(token).get(doc_id).size()) / num_tokens.get(doc_id); // term frequency
+                double t_frequency = 1 + Math.log10(index.get(token).get(doc_id).size()); // term frequency
                 tfs.add(t_frequency);
+                //System.out.println("frequency: "+t_frequency);
                 tf_entry.put(doc_id,t_frequency);
 
             }
@@ -74,7 +75,7 @@ public class Indexer {
             double norm=0;
 
             for(Double tf: tfs){
-                norm += Math.pow(tf,2);
+                norm += tf*tf;
             }
 
             norm = Math.sqrt(norm);
