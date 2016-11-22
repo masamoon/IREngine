@@ -18,7 +18,7 @@ public class Indexer {
     public int num_docs;
 
 
-
+//token -> Map< doc_ids, "weight:pos">
 
     public Indexer() {
         index = new HashMap<>();
@@ -51,35 +51,26 @@ public class Indexer {
     public void tfIdfIndex(Map<Integer,Integer> num_tokens){
         //termo , doc, peso da pesquisa (tf), posicao no doc
         //LTC.LNC policy
-
-        ArrayList<Double> tfs = new ArrayList<>();
-
         for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {
 
+            ArrayList<Double> tfs = new ArrayList<>();
             String token = entry.getKey();
-
             tfidf_index.put(token,new HashMap<>());
             Map<Integer,Double> tf_entry = tfidf_index.get(token);
-
-
-
             for (Map.Entry<Integer, List<Integer>> docs : entry.getValue().entrySet()) {
                 int doc_id = docs.getKey();
                 double t_frequency = 1 + Math.log10(index.get(token).get(doc_id).size()); // term frequency
                 tfs.add(t_frequency);
                 //System.out.println("frequency: "+t_frequency);
                 tf_entry.put(doc_id,t_frequency);
-
             }
-
             double norm=0;
 
             for(Double tf: tfs){
                 norm += tf*tf;
             }
 
-            norm = Math.sqrt(norm);
-
+            norm = Math.sqrt(norm); //normalized weights
             for (Map.Entry<Integer, Double> to_normalize : tf_entry.entrySet()) {
 
                 to_normalize.setValue(to_normalize.getValue()/norm);
