@@ -9,7 +9,6 @@
 import org.tartarus.snowball.ext.englishStemmer;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Tokenizer data type, which is responsible for generating tokens
@@ -45,9 +44,9 @@ public class Tokenizer {
      * Iterates each word in the data stream of the
      * doc to generate the set of tokens.
      *
-     * @param doc Document to tokenize and stem
+     * @param doc Doc to tokenize and stem
      */
-    public void tokenize(Document doc) {
+    public void tokenize(Doc doc) {
         Scanner sc = new Scanner(doc.getDataStream());
         String token;
         Integer num_token;

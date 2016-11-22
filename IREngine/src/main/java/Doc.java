@@ -9,10 +9,10 @@
 import java.net.URI;
 
 /**
- * Document data type, which is responsible for storing
+ * Doc data type, which is responsible for storing
  * the document information.
  */
-public class Document {
+public class Doc {
 
     private int id;
 
@@ -21,13 +21,13 @@ public class Document {
     private URI uri;
 
     /**
-     * Document class constructor.
+     * Doc class constructor.
      *
      * @param id         identifier of the document
      * @param dataStream stream of data present in the document
      * @param uri        resource identification of the document
      */
-    public Document(int id, String dataStream, URI uri) {
+    public Doc(int id, String dataStream, URI uri) {
         this.id = id;
         this.dataStream = dataStream;
         this.uri = uri;

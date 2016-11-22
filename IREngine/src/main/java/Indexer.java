@@ -101,7 +101,7 @@ public class Indexer {
     }
 
     /*
-    public void tfIndex(Document doc, String token){
+    public void tfIndex(Doc doc, String token){
         if (!tf_index.containsKey(token))
             tf_index.put(token, new HashMap<>());
 

@@ -9,11 +9,11 @@
 import java.util.List;
 
 /**
- * Document Processor interface.
+ * Doc Processor interface.
  */
 public interface DocumentProcessor {
 
-    static List<Document> process() {
+    static List<Doc> process() {
         return null;
     }
 }

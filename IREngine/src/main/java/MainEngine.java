@@ -21,35 +21,35 @@ public class MainEngine {
         /* Runtime: uncomment the line below */
         long startTime = System.nanoTime();
         //Small smaple corpus
-        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/sample/";
+        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpus/Questions.csv";
         //Big sample corpus
         //String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/";
 
         /**
          * Execution:
          * crd - Corpus Reader to iterate through the directory of documents
-         * dps - List of Document Processors
+         * dps - List of Doc Processors
          * idx - Boolean Indexer
          */
         URI uri = URI.create(path);
         CorpusReader crd = new CorpusReader(uri);
-        List<Document> dsp = crd.getProcessedDocuments();
+        List<Doc> dsp = crd.getProcessedDocuments();
 
         Indexer idx = new Indexer();
         Tokenizer tokenizer = new Tokenizer();
-        /**
-         * Iterate through the Document Processors to
+
+         /**
+         * Iterate through the Doc Processors to
          * Process, tokenize and index each document
          */
-        for (Document d : dsp) {
+        for (Doc d : dsp) {
             tokenizer.tokenize(d);
-
         }
         idx.index(tokenizer.getTokens());
         //tokenizer.printTokens();
         idx.getBooleanIndex();
-        idx.tfIdfIndex(tokenizer.getNumTokens());
-        idx.printTfIdIndex();
+//        idx.tfIdfIndex(tokenizer.getNumTokens());
+      //  idx.printTfIdIndex();
         /* Examples of index operations */
 
 
@@ -63,7 +63,7 @@ public class MainEngine {
         System.out.println("Contains the term effect in the document with id 20308399?" + (idx.contains("effect",20308399)? "yes":"no"));
         System.out.println("Contains the term effect in the document with id 210308399?" + (idx.contains("effect",210308399)? "yes":"no"));
         //Example to get document frequency for a term
-        System.out.println("Document frequency for the term \"ammonia\":" + idx.getDocFrequency("ammonia"));
+        System.out.println("Doc frequency for the term \"ammonia\":" + idx.getDocFrequency("ammonia"));
 */
 
         /* Runtime: uncomment the lines below */

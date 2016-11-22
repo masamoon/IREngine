@@ -13,12 +13,12 @@ import java.util.List;
 
 /**
  * Corpus Reader data type, which is responsible for reading
- * the files and select the respective Document Processor.
+ * the files and select the respective Doc Processor.
  */
 public class CorpusReader {
 
     private URI uri;
-    private List<Document> docsToProcess;
+    private List<Doc> docsToProcess;
 
     /**
      * Corpus Reader class constructor.
@@ -35,13 +35,13 @@ public class CorpusReader {
 
     /**
      * Iterates the files collection to retrieve the respective
-     * list of Document Processors. Verifies if the URI corresponds
+     * list of Doc Processors. Verifies if the URI corresponds
      * to a File or a Directory path and invokes getDocumentProcessor
      * for each File.
      *
      * @return List of document processors.
      */
-    public List<Document> getProcessedDocuments() {
+    public List<Doc> getProcessedDocuments() {
         File aux = new File(uri.getPath());
         if (aux.isDirectory()) {
             for (File file : aux.listFiles()) {
@@ -56,7 +56,7 @@ public class CorpusReader {
 
     /**
      * Verifies the extension of the file and adds
-     * the respective Document Processor to the list.
+     * the respective Doc Processor to the list.
      *
      * @param file file to retrieve a processor.
      */
@@ -68,13 +68,10 @@ public class CorpusReader {
                 case "arff":
                     docsToProcess.addAll(ArffDocumentProcessor.process(file));
                     break;
-                /*case "txt":
-                    docsToProcess.add(new TxtDocumentProcessor(file));
+                case "csv":
+                    docsToProcess.addAll(CsvDocumentProcessor.process(file));
                     break;
-                case "pdf":
-                    docsToProcess.add(new TxtDocumentProcessor(file));
-                    break;*/
-            }
+              }
 
         }
     }

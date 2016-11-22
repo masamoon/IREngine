@@ -23,8 +23,7 @@ public class ArffDocumentProcessor implements DocumentProcessor {
      * Parses the file so it can generate a documents with the
      * respective identifier, data stream and URI.
      */
-    public ArffDocumentProcessor() {
-    }
+    public ArffDocumentProcessor() {}
 
 
     /**
@@ -32,8 +31,8 @@ public class ArffDocumentProcessor implements DocumentProcessor {
      *
      * @return processed documents
      */
-    public static List<Document> process(File file) {
-        List<Document> aux = new ArrayList<>();
+    public static List<Doc> process(File file) {
+        List<Doc> aux = new ArrayList<>();
         try {
             String line = null;
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -52,7 +51,7 @@ public class ArffDocumentProcessor implements DocumentProcessor {
                                 builder.append(" ").append(s);
                             }
                             String clean_line = builder.toString();
-                            aux.add(new Document(Integer.parseInt(doc_id), clean_line, file.toURI()));
+                            aux.add(new Doc(Integer.parseInt(doc_id), clean_line, file.toURI()));
                         }
 
                     }
