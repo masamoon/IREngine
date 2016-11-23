@@ -33,11 +33,12 @@ public class Indexer {
         tfidf_index = new HashMap<>();
         this.num_docs = 0;
     }
-
+/*
     public Indexer(URI uri) {
         this();
-        load(/*uri*/);
-    }
+        //load(uri);
+        load();
+    }*/
 
     public void index(Map<String, Map<Integer, List<Integer>>> tokens) {
 
@@ -85,7 +86,7 @@ public class Indexer {
             }
 
         }
-        serialize();
+        //serialize();
     }
 
     public void printTfIdIndex(){
@@ -124,7 +125,7 @@ public class Indexer {
     }*/
 
 
-    private void serialize() {
+    public void serialize(URI uri) {
         ArrayList<IndexEntry> gindex = new ArrayList<>();
         Gson gson = new GsonBuilder().create();
 
@@ -140,7 +141,8 @@ public class Indexer {
             }
         }
         try {
-            FileWriter writer = new FileWriter("resources/output/tfidfIndexResult.json");
+            //FileWriter writer = new FileWriter("resources/output/tfidfIndexResult.json");
+            FileWriter writer = new FileWriter(uri.getPath());
             gson.toJson(gindex,writer);
             writer.write("}]\n");
             writer.close();
@@ -150,14 +152,14 @@ public class Indexer {
         }
     }
 
-    public void load(/*URI uri*/) {
-        //TODO: remove hardcoded path
+    public void load(URI uri) {
         //Index gindex = new Index();
         Type indexType = new TypeToken<List<IndexEntry>>(){}.getType();
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         List<IndexEntry> gson_index = new ArrayList<>();
         try {
-            JsonReader reader = new JsonReader(new FileReader("resources/output/tfidfIndexResult.json"));
+            //JsonReader reader = new JsonReader(new FileReader("resources/output/tfidfIndexResult.json"));
+            JsonReader reader = new JsonReader(new FileReader(uri.getPath()));
             reader.setLenient(true);
             gson_index = gson.fromJson(reader, indexType );
 
@@ -217,10 +219,11 @@ public class Indexer {
 
     }
 
-    public void getBooleanIndex() {
+    public void getBooleanIndex(URI uri) {
         // term,document frequency,list of documents
         try {
-            FileWriter fw = new FileWriter("resources/output/booleanIndexResult.txt");
+            //FileWriter fw = new FileWriter("resources/output/booleanIndexResult.txt");
+            FileWriter fw = new FileWriter(uri.getPath());
             for (Map.Entry<String, Map<Integer, List<Integer>>> entry : index.entrySet()) {
                 fw.write(String.format("%s : %d -> [ ", entry.getKey(), entry.getValue().values().size()));
                 for (Map.Entry<Integer, List<Integer>> nested_entry : entry.getValue().entrySet()) {

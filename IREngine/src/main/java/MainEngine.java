@@ -8,6 +8,7 @@
 
 import java.net.URI;
 import java.util.List;
+import org.apache.commons.cli.*;
 
 /**
  * Main Program for Information Retrieval Engine
@@ -18,62 +19,63 @@ public class MainEngine {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        /* Runtime: uncomment the line below */
-        long startTime = System.nanoTime();
-        //Small smaple corpus
-        //String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpus/Questions.csv";
-        //Big sample corpus
-      //  String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/";
+        Options options = new Options();
+        options.addOption("c", "corpus",true, "Path that contain the Corpus");
+        options.addOption("if","indexFrom",true, "File that contains the index");
+        options.addOption("it","indexTo", true, "File where to save the index");
+        options.addOption("b","boolean", true, "File where to save the boolean index");
+        options.addOption("t","times",false,"Prints runtime times");
 
-        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/sample/";
 
-        /**
-         * Execution:
-         * crd - Corpus Reader to iterate through the directory of documents
-         * dps - List of Doc Processors
-         * idx - Boolean Indexer
-         */
-        URI uri = URI.create(path);
-        CorpusReader crd = new CorpusReader(uri);
-        List<Doc> dsp = crd.getProcessedDocuments();
+        HelpFormatter formatter = new HelpFormatter();
+        /* CLI arguments parser & execution accordingly */
+        CommandLineParser clip = new DefaultParser();
+        try{
+            CommandLine cmd = clip.parse(options, args);
+            if (args.length < 1) {
+                formatter.printHelp("Possible usage: \n", options);
+            } else {
+                long startTime = System.nanoTime();
 
-        Indexer idx = new Indexer();
-        Tokenizer tokenizer = new Tokenizer();
+                URI corpusUri, indexInput, indexOutput, booleanIndex;
+                Indexer idx = new Indexer();
+                if(cmd.hasOption("c")) {
+                    corpusUri = URI.create(cmd.getOptionValue("c"));
+                    CorpusReader crd = new CorpusReader(corpusUri);
+                    List<Doc> dsp = crd.getProcessedDocuments();
+                    Tokenizer tokenizer = new Tokenizer();
+                    for (Doc d : dsp) {
+                        tokenizer.tokenize(d);
+                    }
+                    idx.index(tokenizer.getTokens());
+                }
 
-         /**
-         * Iterate through the Doc Processors to
-         * Process, tokenize and index each document
-         */
-        for (Doc d : dsp) {
-            tokenizer.tokenize(d);
+                if(cmd.hasOption("if")){
+                    indexInput = URI.create(cmd.getOptionValue("if"));
+                    idx.load(indexInput);
+                }
+
+                if(cmd.hasOption("it")){
+                    indexOutput = URI.create(cmd.getOptionValue("it"));
+                    idx.serialize(indexOutput);
+                }
+
+                if(cmd.hasOption("b")){
+                    booleanIndex =  URI.create(cmd.getOptionValue("b"));
+                    idx.getBooleanIndex(booleanIndex);
+                }
+
+                //more execution actions here...
+
+                if(cmd.hasOption("t")){
+                    long endTime = System.nanoTime();
+                    long duration = (endTime - startTime);
+                    System.out.println(String.format("Duration: %.4f sec\n", (float) duration / 1000000000));
+                }
+            }
+        }catch (ParseException e){
+            formatter.printHelp("Possible usage: \n", options);
         }
-        idx.index(tokenizer.getTokens());
-        //tokenizer.printTokens();
-        idx.getBooleanIndex();
-        idx.tfIdfIndex(tokenizer.getNumTokens());
-        idx.load();
-        idx.printTfIdIndex();
-
-        /* Examples of index operations */
-
-
-        //Print full index
-        //idx.printIndex();
-/*
-        //Examples of boolean index query
-        System.out.println("Contains the term ammonia? " + (idx.contains("ammonia")? "yes":"no"));
-        System.out.println("Contains the term raquel? " + (idx.contains("raquel")? "yes":"no"));
-
-        System.out.println("Contains the term effect in the document with id 20308399?" + (idx.contains("effect",20308399)? "yes":"no"));
-        System.out.println("Contains the term effect in the document with id 210308399?" + (idx.contains("effect",210308399)? "yes":"no"));
-        //Example to get document frequency for a term
-        System.out.println("Doc frequency for the term \"ammonia\":" + idx.getDocFrequency("ammonia"));
-*/
-
-        /* Runtime: uncomment the lines below */
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
-        System.out.println(String.format("Duration: %.4f sec\n", (float) duration / 1000000000));
 
     }
 }
