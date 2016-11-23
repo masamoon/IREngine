@@ -52,7 +52,7 @@ public class MainEngine {
         idx.getBooleanIndex();
         idx.tfIdfIndex(tokenizer.getNumTokens());
         idx.load();
-      //  idx.printTfIdIndex();
+        idx.printTfIdIndex();
 
         /* Examples of index operations */
 

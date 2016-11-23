@@ -166,7 +166,17 @@ public class Indexer {
         }
 
         for(IndexEntry e: gson_index){
-            System.out.println(e.term +" -> "+e.doc_id+" : "+e.weight);
+          //  System.out.println(e.term +" -> "+e.doc_id+" : "+e.weight);
+            if(tfidf_index.containsKey(e.term)){
+
+                Map<Integer,Double> tfidf_entry = tfidf_index.get(e.term);
+                tfidf_entry.put(e.doc_id,e.weight);
+            }
+            else{
+                tfidf_index.put(e.term, new HashMap<Integer, Double>());
+                Map<Integer,Double> tfidf_entry = tfidf_index.get(e.term);
+                tfidf_entry.put(e.doc_id,e.weight);
+            }
         }
     }
 
