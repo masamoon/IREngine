@@ -21,9 +21,11 @@ public class MainEngine {
         /* Runtime: uncomment the line below */
         long startTime = System.nanoTime();
         //Small smaple corpus
-        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpus/Questions.csv";
+        //String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpus/Questions.csv";
         //Big sample corpus
-        //String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/";
+      //  String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/";
+
+        String path = System.getProperty("user.dir").replace("\\", "/") + "/resources/sample/";
 
         /**
          * Execution:
@@ -48,8 +50,10 @@ public class MainEngine {
         idx.index(tokenizer.getTokens());
         //tokenizer.printTokens();
         idx.getBooleanIndex();
-//        idx.tfIdfIndex(tokenizer.getNumTokens());
+        idx.tfIdfIndex(tokenizer.getNumTokens());
+        idx.load();
       //  idx.printTfIdIndex();
+
         /* Examples of index operations */
 
 

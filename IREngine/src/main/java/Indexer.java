@@ -1,5 +1,13 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,10 +36,11 @@ public class Indexer {
 
     public Indexer(URI uri) {
         this();
-        load(uri);
+        load(/*uri*/);
     }
 
     public void index(Map<String, Map<Integer, List<Integer>>> tokens) {
+
         for (Map.Entry<String, Map<Integer, List<Integer>>> entry : tokens.entrySet()) {
             if (!index.containsKey(entry.getKey()))
                 index.put(entry.getKey(), entry.getValue());
@@ -72,14 +81,11 @@ public class Indexer {
 
             norm = Math.sqrt(norm); //normalized weights
             for (Map.Entry<Integer, Double> to_normalize : tf_entry.entrySet()) {
-
                 to_normalize.setValue(to_normalize.getValue()/norm);
-
             }
 
-
         }
-
+        serialize();
     }
 
     public void printTfIdIndex(){
@@ -119,11 +125,49 @@ public class Indexer {
 
 
     private void serialize() {
-        //TODO: use Gson to store internal structure (index)
+        ArrayList<IndexEntry> gindex = new ArrayList<>();
+        Gson gson = new GsonBuilder().create();
+
+        for(Map.Entry<String,Map<Integer,Double>> entry : tfidf_index.entrySet()){
+            IndexEntry indexEntry = new IndexEntry();
+            indexEntry.term = entry.getKey();
+            for(Map.Entry<Integer,Double> nested_entry : entry.getValue().entrySet()){
+               // System.out.println(entry.getKey()+" -> "+nested_entry.getKey()+" : "+nested_entry.getValue());
+                indexEntry.doc_id = nested_entry.getKey();
+                indexEntry.weight = nested_entry.getValue();
+                gindex.add(indexEntry);
+
+            }
+        }
+        try {
+            FileWriter writer = new FileWriter("resources/output/tfidfIndexResult.json");
+            gson.toJson(gindex,writer);
+            writer.write("}]\n");
+            writer.close();
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
-    private void load(URI uri) {
-        //TODO: use Gson to load previous stored structure (index)
+    public void load(/*URI uri*/) {
+        //TODO: remove hardcoded path
+        //Index gindex = new Index();
+        Type indexType = new TypeToken<List<IndexEntry>>(){}.getType();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        List<IndexEntry> gson_index = new ArrayList<>();
+        try {
+            JsonReader reader = new JsonReader(new FileReader("resources/output/tfidfIndexResult.json"));
+            reader.setLenient(true);
+            gson_index = gson.fromJson(reader, indexType );
+
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
+        for(IndexEntry e: gson_index){
+            System.out.println(e.term +" -> "+e.doc_id+" : "+e.weight);
+        }
     }
 
     public void printIndex() {
