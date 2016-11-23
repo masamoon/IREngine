@@ -7,8 +7,11 @@
  */
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import org.apache.commons.cli.*;
+
+import javax.print.URIException;
 
 /**
  * Main Program for Information Retrieval Engine
@@ -75,6 +78,8 @@ public class MainEngine {
             }
         }catch (ParseException e){
             formatter.printHelp("Possible usage: \n", options);
+        }catch(IllegalArgumentException e) {
+            System.out.printf("Invalid path: %s \n",e.getMessage().split(":")[1]);
         }
 
     }
