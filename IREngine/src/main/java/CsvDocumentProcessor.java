@@ -34,8 +34,14 @@ public class CsvDocumentProcessor  implements DocumentProcessor{
                 tokenizer = new Tokenizer();
                 clean_line  = new StringBuilder();
                 try{
-                    clean_line.append(record.get("Title"));
-                    clean_line.append(" : ");
+                    String title = record.get("Title");
+                    String[] words = title.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+"); //remove puncuation all lower case
+                    StringBuilder builder = new StringBuilder();
+                    for (String s : words) {
+                        builder.append(" ").append(s);
+                    }
+                    clean_line.append(builder.toString());
+
                 }catch(IllegalArgumentException e){}
                 tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
                 idx.index(tokenizer.getTokens());

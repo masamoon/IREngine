@@ -61,7 +61,7 @@ public class MainEngine {
                     CorpusReader crd = new CorpusReader(corpusUri);
 
                     idx.setSerializeTo(index);
-                    idx.load(index);
+                   // idx.load(index);
                     crd.getProcessedDocuments(memoryToUse);
                     //idx.load(index);
                     //List<Doc> dsp = crd.getProcessedDocuments();

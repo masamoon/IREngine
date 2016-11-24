@@ -24,6 +24,7 @@ public class Indexer {
 
     private Map<String,Map<Integer,Double>> tfidf_index; // term -> map < doc_id , weight >
 
+
     private Map<Integer,Integer> num_tokens; // docid -> num_tokens
     public int num_docs;
 
@@ -158,11 +159,12 @@ public class Indexer {
             }
         }
         try {
-            //FileWriter writer = new FileWriter("resources/output/tfidfIndexResult.json");
-            FileWriter writer = new FileWriter(serializeTo.getPath(),true);
+            FileWriter writer = new FileWriter("resources/output/tfidfIndexResult.json");
+//            FileWriter writer = new FileWriter(serializeTo.getPath(),true);
             gson.toJson(gindex,writer);
             writer.write("}]\n");
             writer.close();
+            tfidf_index = new HashMap<>();
         }
         catch (IOException e){
             e.printStackTrace();
