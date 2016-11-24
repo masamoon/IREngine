@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Indexer {
-
+    private final Memory memory;
     private Map<String, Map<Integer, List<Integer>>> index;
+    private URI serializeTo;
+    private final int mmem; //maxMemory
 
    // private Map<String,Map<Integer,Integer>> tf_index;
 
@@ -28,10 +30,17 @@ public class Indexer {
 
 //token -> Map< doc_ids, "weight:pos">
 
-    public Indexer() {
+    public Indexer(int mem) {
         index = new HashMap<>();
         tfidf_index = new HashMap<>();
         this.num_docs = 0;
+        this.serializeTo = null;
+        memory = new Memory();
+        this.mmem = mem;
+    }
+
+    public void setSerializeTo(URI uri){
+        this.serializeTo = uri;
     }
 /*
     public Indexer(URI uri) {
@@ -41,7 +50,6 @@ public class Indexer {
     }*/
 
     public void index(Map<String, Map<Integer, List<Integer>>> tokens) {
-
         for (Map.Entry<String, Map<Integer, List<Integer>>> entry : tokens.entrySet()) {
             if (!index.containsKey(entry.getKey()))
                 index.put(entry.getKey(), entry.getValue());
@@ -62,7 +70,12 @@ public class Indexer {
         //termo , doc, peso da pesquisa (tf), posicao no doc
         //LTC.LNC policy
         for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {
-
+            if (memory.getCurrentMemory() >= (mmem*0.85)) {
+                System.out.println("Memory usage is high - Saving Index current state before the next tf-idf indexation");
+                free();
+                System.gc();
+                System.out.println("Saved");
+            }
             ArrayList<Double> tfs = new ArrayList<>();
             String token = entry.getKey();
             tfidf_index.put(token,new HashMap<>());
@@ -125,7 +138,11 @@ public class Indexer {
     }*/
 
 
-    public void serialize(URI uri) {
+    public void free(){
+        serialize();
+    }
+
+    public void serialize() {
         ArrayList<IndexEntry> gindex = new ArrayList<>();
         Gson gson = new GsonBuilder().create();
 
@@ -142,7 +159,7 @@ public class Indexer {
         }
         try {
             //FileWriter writer = new FileWriter("resources/output/tfidfIndexResult.json");
-            FileWriter writer = new FileWriter(uri.getPath());
+            FileWriter writer = new FileWriter(serializeTo.getPath(),true);
             gson.toJson(gindex,writer);
             writer.write("}]\n");
             writer.close();
@@ -150,6 +167,10 @@ public class Indexer {
         catch (IOException e){
             e.printStackTrace();
         }
+        catch(NullPointerException e){
+            e.printStackTrace();
+        }
+
     }
 
     public void load(URI uri) {

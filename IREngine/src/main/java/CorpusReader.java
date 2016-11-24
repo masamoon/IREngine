@@ -41,17 +41,17 @@ public class CorpusReader {
      *
      * @return List of document processors.
      */
-    public List<Doc> getProcessedDocuments() {
+    public void getProcessedDocuments(int maxMem) {
         File aux = new File(uri.getPath());
         if (aux.isDirectory()) {
             for (File file : aux.listFiles()) {
-                getDocumentProcessor(file);
+                getDocumentProcessor(file,maxMem);
             }
         } else {
-            getDocumentProcessor(aux);
+            getDocumentProcessor(aux,maxMem);
         }
 
-        return docsToProcess;
+        //return docsToProcess;
     }
 
     /**
@@ -60,7 +60,7 @@ public class CorpusReader {
      *
      * @param file file to retrieve a processor.
      */
-    public void getDocumentProcessor(File file) {
+    public void getDocumentProcessor(File file, int maxMem) {
         String path = file.getPath();
         if (path.contains(".")) {
             String extension = path.substring(path.lastIndexOf(".") + 1);
@@ -69,7 +69,7 @@ public class CorpusReader {
                     docsToProcess.addAll(ArffDocumentProcessor.process(file));
                     break;
                 case "csv":
-                    docsToProcess.addAll(CsvDocumentProcessor.process(file));
+                    CsvDocumentProcessor.process(file,maxMem);
                     break;
               }
 

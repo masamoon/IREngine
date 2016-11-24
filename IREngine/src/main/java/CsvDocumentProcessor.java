@@ -21,28 +21,35 @@ import java.util.List;
 public class CsvDocumentProcessor  implements DocumentProcessor{
     public CsvDocumentProcessor(){}
 
-    public static List<Doc> process(File file){
-        List<Doc> aux = new ArrayList<>();
+    public static void process(File file, int mem){
+        //List<Doc> aux = new ArrayList<>();
+        Tokenizer tokenizer;
+        Indexer idx;
         try {
             Reader in = new FileReader(file);
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader().withSkipHeaderRecord().parse(in);
             StringBuilder clean_line;
+            idx = new Indexer(mem);
             for (CSVRecord record : records) {
+                tokenizer = new Tokenizer();
                 clean_line  = new StringBuilder();
                 try{
                     clean_line.append(record.get("Title"));
                     clean_line.append(" : ");
                 }catch(IllegalArgumentException e){}
-                aux.add(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
+                tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
+                idx.index(tokenizer.getTokens());
+                idx.tfIdfIndex(tokenizer.getNumTokens());
             }
 
+            idx.serialize();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return aux;
+        //return aux;
     }
 
 

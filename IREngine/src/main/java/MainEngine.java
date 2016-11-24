@@ -24,10 +24,11 @@ public class MainEngine {
     public static void main(String[] args) {
         Options options = new Options();
         options.addOption("c", "corpus",true, "Path that contain the Corpus");
-        options.addOption("if","indexFrom",true, "File that contains the index");
-        options.addOption("it","indexTo", true, "File where to save the index");
+        options.addOption("i","index",true, "File to load from or serialize to the indexer");
+        //options.addOption("it","indexTo", true, "File where to save the index");
         options.addOption("b","boolean", true, "File where to save the boolean index");
         options.addOption("t","times",false,"Prints runtime times");
+        options.addOption("m","Memory",true,"Define maximum memory to use");
 
 
         HelpFormatter formatter = new HelpFormatter();
@@ -39,37 +40,46 @@ public class MainEngine {
                 formatter.printHelp("Possible usage: \n", options);
             } else {
                 long startTime = System.nanoTime();
+                int memoryToUse;
+                if (cmd.hasOption("m")) {
+                    memoryToUse = Integer.parseInt(cmd.getOptionValue("m"));
+                } else {
+                    memoryToUse = 512;
+                }
+                URI corpusUri, index, booleanIndex;
+                Indexer idx = new Indexer(memoryToUse);
+                if(cmd.hasOption("i")){
+                    index = URI.create(cmd.getOptionValue("i"));
+                }
+                else{
+                    index = URI.create("resources/output/tfidfIndexResult.json");
+                }
 
-                URI corpusUri, indexInput, indexOutput, booleanIndex;
-                Indexer idx = new Indexer();
+
                 if(cmd.hasOption("c")) {
                     corpusUri = URI.create(cmd.getOptionValue("c"));
                     CorpusReader crd = new CorpusReader(corpusUri);
-                    List<Doc> dsp = crd.getProcessedDocuments();
-                    Tokenizer tokenizer = new Tokenizer();
+
+                    idx.setSerializeTo(index);
+                    idx.load(index);
+                    crd.getProcessedDocuments(memoryToUse);
+                    //idx.load(index);
+                    //List<Doc> dsp = crd.getProcessedDocuments();
+                    /*Tokenizer tokenizer = new Tokenizer();
                     for (Doc d : dsp) {
                         tokenizer.tokenize(d);
                     }
-                    idx.index(tokenizer.getTokens());
-                }
-
-                if(cmd.hasOption("if")){
-                    indexInput = URI.create(cmd.getOptionValue("if"));
-                    idx.load(indexInput);
-                }
-
-                if(cmd.hasOption("it")){
-                    indexOutput = URI.create(cmd.getOptionValue("it"));
-                    idx.serialize(indexOutput);
+                    idx.index(tokenizer.getTokens());*/
                 }
 
                 if(cmd.hasOption("b")){
                     booleanIndex =  URI.create(cmd.getOptionValue("b"));
+                    idx.load(index);
                     idx.getBooleanIndex(booleanIndex);
                 }
 
                 //more execution actions here...
-
+                //idx.printIndex();
                 if(cmd.hasOption("t")){
                     long endTime = System.nanoTime();
                     long duration = (endTime - startTime);
