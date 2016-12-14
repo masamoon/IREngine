@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.*;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import java.util.List;
 public class CsvDocumentProcessor  implements DocumentProcessor{
     public CsvDocumentProcessor(){}
 
-    public static void process(File file, int mem){
+    public static void process(File file, int mem, URI stopURI){
         //List<Doc> aux = new ArrayList<>();
         Tokenizer tokenizer;
         Indexer idx;
@@ -32,23 +33,40 @@ public class CsvDocumentProcessor  implements DocumentProcessor{
             StringBuilder clean_line;
             idx = new Indexer(mem);
             for (CSVRecord record : records) {
-                tokenizer = new Tokenizer();
+                tokenizer = new Tokenizer(stopURI);
                 clean_line  = new StringBuilder();
                 try{
                     String title = record.get("Title");
+                    String[] words;
+                    if(title.length() > 0) {
+                        words = title.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+"); //remove puncuation all lower case
 
-                    String[] words = title.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+"); //remove puncuation all lower case
+                        StringBuilder builder = new StringBuilder();
+                        for (String s : words) {
+                            builder.append(" ").append(s);
+                        }
+                        clean_line.append(builder.toString());
+                    }
+                }catch(IllegalArgumentException e){
+
+                }
+                try{
+                    String body = record.get("Body");
+                    Document doc = Jsoup.parse(body);
+                    String words[] = doc.body().text().replace(doc.select("code").text(),"").replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
                     StringBuilder builder = new StringBuilder();
                     for (String s : words) {
-
                         builder.append(" ").append(s);
+
                     }
                     clean_line.append(builder.toString());
+                }catch(IllegalArgumentException e){
+                    e.printStackTrace();
+                }
 
-                }catch(IllegalArgumentException e){}
                 tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
                 idx.index(tokenizer.getTokens());
-                idx.tfIdfIndex(tokenizer.getNumTokens());
+                idx.tfIdfIndex();
 
             }
             idx.merge();

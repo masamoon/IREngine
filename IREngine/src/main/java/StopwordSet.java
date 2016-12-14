@@ -7,6 +7,7 @@
  */
 
 import java.io.*;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,8 +25,8 @@ public class StopwordSet {
      * Retrieves the file that contains the stopword list
      * and adds it to structure without repetitions (Set).
      */
-    public StopwordSet() {
-        File f = new File("./resources/stopwords_english.txt");
+    public StopwordSet(URI uri) {
+        File f = new File(uri.getPath());
         try {
             String line = null;
             BufferedReader br = new BufferedReader(new FileReader(f));

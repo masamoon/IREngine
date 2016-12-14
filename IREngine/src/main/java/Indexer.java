@@ -91,7 +91,7 @@ public class Indexer {
         }
     }
 
-    public void tfIdfIndex(Map<Integer,Integer> num_tokens){
+    public void tfIdfIndex(){
         //termo , doc, peso da pesquisa (tf), posicao no doc
         //LTC.LNC policy
         for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {

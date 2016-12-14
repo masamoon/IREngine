@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class CorpusReader {
 
-    private URI uri;
+    private URI uri, stop;
     private List<Doc> docsToProcess;
 
     /**
@@ -28,9 +28,10 @@ public class CorpusReader {
         docsToProcess = new ArrayList<>();
     }
 
-    public CorpusReader(URI uri) {
+    public CorpusReader(URI uri, URI stopURI) {
         this();
         this.uri = uri;
+        stop = stopURI;
     }
 
     /**
@@ -69,7 +70,7 @@ public class CorpusReader {
                     docsToProcess.addAll(ArffDocumentProcessor.process(file));
                     break;
                 case "csv":
-                    CsvDocumentProcessor.process(file,maxMem);
+                    CsvDocumentProcessor.process(file,maxMem, stop);
                     break;
               }
 

@@ -58,7 +58,8 @@ public class MainEngine {
 
                 if(cmd.hasOption("c")) {
                     corpusUri = URI.create(cmd.getOptionValue("c"));
-                    CorpusReader crd = new CorpusReader(corpusUri);
+                    //TODO: path do stopword file como argumento!
+                    CorpusReader crd = new CorpusReader(corpusUri, URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/stopwords_english.txt"));
 
                     idx.setSerializeTo(index);
                    // idx.load(index);
