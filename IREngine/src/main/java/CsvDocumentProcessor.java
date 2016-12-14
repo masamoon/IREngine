@@ -27,6 +27,7 @@ public class CsvDocumentProcessor  implements DocumentProcessor{
         Indexer idx;
         try {
             Reader in = new FileReader(file);
+
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader().withSkipHeaderRecord().parse(in);
             StringBuilder clean_line;
             idx = new Indexer(mem);
@@ -35,9 +36,11 @@ public class CsvDocumentProcessor  implements DocumentProcessor{
                 clean_line  = new StringBuilder();
                 try{
                     String title = record.get("Title");
+
                     String[] words = title.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+"); //remove puncuation all lower case
                     StringBuilder builder = new StringBuilder();
                     for (String s : words) {
+
                         builder.append(" ").append(s);
                     }
                     clean_line.append(builder.toString());
@@ -46,7 +49,10 @@ public class CsvDocumentProcessor  implements DocumentProcessor{
                 tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
                 idx.index(tokenizer.getTokens());
                 idx.tfIdfIndex(tokenizer.getNumTokens());
+
             }
+            idx.merge();
+            idx.printMergedIndex();
 
             idx.serialize();
         } catch (FileNotFoundException e) {

@@ -20,6 +20,7 @@ public class Tokenizer {
     private Map<String, Map<Integer, List<Integer>>> tokens; //tokens: token -> docid -> posiçoes
     private Map<Integer,Integer> num_tokens_doc; // doc_id -> num_tokens
 
+
     /**
      * Tokenizer class constructor.
      */

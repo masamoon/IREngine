@@ -24,6 +24,9 @@ public class Indexer {
 
     private Map<String,Map<Integer,Double>> tfidf_index; // term -> map < doc_id , weight >
 
+    //TODO: merged index->  term: doc_id[weight,[pos list]]
+
+    private Map<String,Map<Integer,Tuple<Double,List<Integer>>>> merged_index;
 
     private Map<Integer,Integer> num_tokens; // docid -> num_tokens
     public int num_docs;
@@ -34,10 +37,31 @@ public class Indexer {
     public Indexer(int mem) {
         index = new HashMap<>();
         tfidf_index = new HashMap<>();
+        merged_index = new HashMap<>();
         this.num_docs = 0;
         this.serializeTo = null;
         memory = new Memory();
         this.mmem = mem;
+    }
+
+    public void merge(){
+
+        for( String term : tfidf_index.keySet()){
+
+            System.out.println("term: "+term);
+            merged_index.put(term, new HashMap<>());
+
+            Map<Integer,Double> tfidf_entry = tfidf_index.get(term);
+
+            Map<Integer,List<Integer>> index_entry = index.get(term);
+
+            Map<Integer, Tuple<Double,List<Integer>>> merged_entry = merged_index.get(term);
+
+            for ( Integer docid : tfidf_entry.keySet()){
+
+                merged_entry.put(docid,new Tuple<Double,List<Integer>>(tfidf_entry.get(docid),index_entry.get(docid)));
+            }
+        }
     }
 
     public void setSerializeTo(URI uri){
@@ -211,6 +235,19 @@ public class Indexer {
             System.out.println(entry.getKey() + " : ");
             for (Map.Entry<Integer, List<Integer>> nested_entry : entry.getValue().entrySet()) {
                 System.out.println("- " + nested_entry.getKey() + ": " + nested_entry.getValue());
+            }
+        }
+    }
+
+    public void printMergedIndex(){
+        System.out.println("printing merged index");
+        for (Map.Entry<String, Map<Integer, Tuple<Double,List<Integer>>>> entry : merged_index.entrySet()) {
+            System.out.println(entry.getKey() + " : ");
+            for (Map.Entry<Integer, Tuple<Double,List<Integer>>> nested_entry : entry.getValue().entrySet()) {
+                System.out.println("- " + nested_entry.getKey() + ": "+nested_entry.getValue().x+",");
+                for(Integer pos : nested_entry.getValue().y){
+                    System.out.print(pos);
+                }
             }
         }
     }
