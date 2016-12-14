@@ -11,4 +11,5 @@ public class Memory {
     public void printMemory(){
         System.out.println((runtime.totalMemory() - runtime.freeMemory()) / 1000000);
     }
+    //k
 }
