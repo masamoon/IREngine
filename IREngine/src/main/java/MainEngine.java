@@ -24,7 +24,7 @@ public class MainEngine {
     public static void main(String[] args) {
         long startTime = System.nanoTime();
 
-        URI corpusUri = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/csv/Answers_mini.csv");
+        URI corpusUri = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/csv/Answers.csv");
         URI stop = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/stopwords_english.txt");
         CorpusReader crd = new CorpusReader(corpusUri, stop);
 

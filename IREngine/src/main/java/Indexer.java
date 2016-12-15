@@ -88,12 +88,6 @@ public class Indexer {
         //termo , doc, peso da pesquisa (tf), posicao no doc
         //LTC.LNC policy
         for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {
-            if (memory.getCurrentMemory() >= (mmem*0.85)) {
-                System.out.println("Memory usage is high - Saving Index current state before the next tf-idf indexation");
-                free();
-                System.gc();
-                System.out.println("Saved");
-            }
             ArrayList<Double> tfs = new ArrayList<>();
             String token = entry.getKey();
             tfidf_index.put(token,new HashMap<>());
@@ -116,6 +110,12 @@ public class Indexer {
             }
 
 
+        }
+        if (memory.getCurrentMemory() >= (mmem*0.85)) {
+            System.out.println("Memory usage is high - Saving Index current state before the next tf-idf indexation");
+            free();
+            System.gc();
+            System.out.println("Saved");
         }
         //serialize();
     }
