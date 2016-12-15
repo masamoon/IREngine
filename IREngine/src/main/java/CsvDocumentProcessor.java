@@ -1,15 +1,10 @@
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.jsoup.Jsoup;
-import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+
 import java.io.*;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Aveiro University, Department of Electronics, Telecommunications and Informatics.
@@ -23,7 +18,6 @@ public class CsvDocumentProcessor  implements DocumentProcessor{
     public CsvDocumentProcessor(){}
 
     public static void process(File file, int mem, URI stopURI){
-        //List<Doc> aux = new ArrayList<>();
         Tokenizer tokenizer;
         Indexer idx;
         try {

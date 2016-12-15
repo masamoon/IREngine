@@ -22,6 +22,24 @@ public class MainEngine {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        long startTime = System.nanoTime();
+
+        URI corpusUri = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/csv/Answers_mini.csv");
+        URI stop = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/stopwords_english.txt");
+        CorpusReader crd = new CorpusReader(corpusUri, stop);
+
+        URI serTo = URI.create(System.getProperty("user.dir").replace("\\", "/") + "resources/output");
+        Indexer idx = new Indexer(512);
+        idx.setSerializeTo(serTo);
+        crd.getProcessedDocuments(512);
+
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        System.out.println(String.format("Duration: %.4f sec\n", (float) duration / 1000000000));
+    }
+}
+    /* OFFICIAL MAIN:
+    public static void main(String[] args) {
         Options options = new Options();
         options.addOption("c", "corpus",true, "Path that contain the Corpus");
         options.addOption("i","index",true, "File to load from or serialize to the indexer");
@@ -32,7 +50,6 @@ public class MainEngine {
 
 
         HelpFormatter formatter = new HelpFormatter();
-        /* CLI arguments parser & execution accordingly */
         CommandLineParser clip = new DefaultParser();
         try{
             CommandLine cmd = clip.parse(options, args);
@@ -71,8 +88,8 @@ public class MainEngine {
                         tokenizer.tokenize(d);
                     }
                     idx.index(tokenizer.getTokens());*/
-                }
-
+                //}
+/*
                 if(cmd.hasOption("b")){
                     booleanIndex =  URI.create(cmd.getOptionValue("b"));
                     idx.load(index);
@@ -93,5 +110,4 @@ public class MainEngine {
             System.out.printf("Invalid path: %s \n",e.getMessage().split(":")[1]);
         }
 
-    }
-}
+    }*/
