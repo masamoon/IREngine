@@ -72,6 +72,7 @@ public class Tokenizer {
             }
             idx++;
         }
+        //k
         /*
         while (sc.hasNext()) {
             token = sc.next();
