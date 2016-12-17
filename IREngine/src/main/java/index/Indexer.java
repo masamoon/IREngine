@@ -1,6 +1,8 @@
 package index;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -29,7 +31,8 @@ public class Indexer {
 
     //TODO: merged index->  term: doc_id[weight,[pos list]]
 
-    private Map<String,Map<Integer, Tuple<Double,List<Integer>>>> merged_index;
+    //private Map<String,Map<Integer, Tuple<Double,List<Integer>>>> merged_index;
+    private Multimap<String,IndexEntry> merged_index;
 
 
 
@@ -38,14 +41,14 @@ public class Indexer {
     public Indexer(int mem) {
         index = new TreeMap<>();
         tfidf_index = new TreeMap<>();
-        merged_index = new TreeMap<>();
+        merged_index = ArrayListMultimap.create();
         serializeTo = null;
         memory = new Memory();
         mmem = mem;
 
     }
 
-    public void merge(){
+    public void merge(){/*
         for( String term : tfidf_index.keySet()){
             if(!merged_index.containsKey(term))
                 merged_index.put(term, new HashMap<>());
@@ -59,7 +62,7 @@ public class Indexer {
         }
 
         tfidf_index = new TreeMap<>();
-        index = new TreeMap<>();
+        index = new TreeMap<>();*/
     }
 
     public void setSerializeTo(URI uri){
@@ -86,18 +89,19 @@ public class Indexer {
 
         }
 
-        double norm = Math.sqrt(sumw);
+        double norm = 1/Math.sqrt(sumw);
 
         for(String term : tokens.keySet()){
-            merged_index.put(term,new HashMap<>());
-            Map<Integer,Tuple<Double,List<Integer>>> entry = merged_index.get(term);
+            //merged_index.put(term,new ArrayList<>());
+            //Map<Integer,Tuple<Double,List<Integer>>> entry = merged_index.get(term);
             Collection<Integer> pos = tokens.get(term);
             int t_frequency = pos.size();
             double tf = 1 + Math.log10(t_frequency); // term frequency
 
 
-            entry.put(docId,new Tuple(tf/norm,new ArrayList<Integer>(pos)));
-            merged_index.put(term,entry);
+            IndexEntry indexEntry = new IndexEntry(docId,tf*norm,new ArrayList<Integer>(pos));
+            //entry.put(docId,new Tuple(tf*norm,new ArrayList<Integer>(pos)));
+            merged_index.put(term,indexEntry);
         }
 
         /*for (Map.Entry<String, List<Integer>> entry : tokens.entrySet()) {
@@ -189,7 +193,7 @@ public class Indexer {
     }
 
     public void serialize() {
-        try{
+        /*try{
             Gson gson = new Gson();
 
             //TODO: optional? Garantir que o ficheiro está vazio, se nao estiver então fazer merge do q está no ficheiro com o q existe neste index?
@@ -215,7 +219,7 @@ public class Indexer {
         }
         catch(NullPointerException e){
             e.printStackTrace();
-        }
+        }*/
 
 
     }
@@ -229,7 +233,7 @@ public class Indexer {
         }
     }
 
-    public void printMergedIndex(){
+    public void printMergedIndex(){/*
         System.out.println("printing merged index");
         for (Map.Entry<String, Map<Integer, Tuple<Double,List<Integer>>>> entry : merged_index.entrySet()) {
             System.out.println(entry.getKey() + " : ");
@@ -241,7 +245,7 @@ public class Indexer {
                 }
                 System.out.print("]\n");
             }
-        }
+        }*/
     }
 
     public boolean contains(String term) {

@@ -45,5 +45,17 @@ public class IndexEntry {
         this.positions = positions;
     }
 
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
 
+        stringBuilder.append(doc_id+"->"+weight+"[");
+
+        for(Integer pos : positions){
+            stringBuilder.append(pos+",");
+        }
+        stringBuilder.append("]");
+
+        return stringBuilder.toString();
+
+    }
 }
