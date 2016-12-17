@@ -9,6 +9,7 @@ package tokenizer; /**
 import org.tartarus.snowball.ext.englishStemmer;
 
 import java.net.URI;
+import java.text.BreakIterator;
 import java.util.*;
 
 import document.Doc;
@@ -48,8 +49,30 @@ public class Tokenizer {
      */
     public void tokenize(Doc doc) {
         Scanner sc = new Scanner(doc.getDataStream());
+        BreakIterator boundary = BreakIterator.getWordInstance();
+        boundary.setText(doc.getDataStream());
         String token;
         int idx = 1;
+        int start = boundary.first();
+
+        for (int end = boundary.next();
+             end != BreakIterator.DONE;
+             start = end, end = boundary.next()) {
+            token = doc.getDataStream().substring(start,end);
+           // System.out.println(token);
+            if (!stopwordSet.contains(token) && !stopwordSet.contains(stem(token))) { // to not tokenize the stopwords!!
+                token = stem(token);
+                if (!tokens.containsKey(token))
+                    tokens.put(token, new HashMap<>());
+
+                if (!tokens.get(token).containsKey(doc.getId()))
+                    tokens.get(token).put(doc.getId(), new ArrayList<>());
+
+                tokens.get(token).get(doc.getId()).add(idx);
+            }
+            idx++;
+        }
+        /*
         while (sc.hasNext()) {
             token = sc.next();
             if (!stopwordSet.contains(token) && !stopwordSet.contains(stem(token))) { // to not tokenize the stopwords!!
@@ -63,7 +86,7 @@ public class Tokenizer {
                 tokens.get(token).get(doc.getId()).add(idx);
             }
             idx++;
-        }
+        }*/
         sc.close();
     }
 

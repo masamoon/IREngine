@@ -40,7 +40,10 @@ public class CsvDocumentProcessor implements DocumentProcessor {
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader().withSkipHeaderRecord().parse(in);
             StringBuilder clean_line;
             idx = new Indexer(mem);
+            int rnum = 0;
             for (CSVRecord record : records) {
+                rnum++;
+                System.out.println("record num: "+rnum);
                 tokenizer = new Tokenizer(stopURI);
                 clean_line = new StringBuilder();
                 try {
