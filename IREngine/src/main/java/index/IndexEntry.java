@@ -49,13 +49,13 @@ public class IndexEntry {
     public String toString(){
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append(doc_id+"="+weight+"[");
+        //stringBuilder.append(doc_id+"="+weight+"[");
 
         String pos = positions.stream()
                 .map(i -> i.toString())
                 .collect(Collectors.joining(","));
 
-        stringBuilder.append(pos+"]\n");
+        stringBuilder.append(doc_id+"="+weight+"["+pos+"]\n");
 
 
 
