@@ -23,7 +23,7 @@ public class Indexer {
     private URI serializeTo;
     private final int mmem; //maxMemory
 
-    private double sumw;
+
 
    // private Map<String,Map<Integer,Integer>> tf_index;
 
@@ -42,7 +42,7 @@ public class Indexer {
         serializeTo = null;
         memory = new Memory();
         mmem = mem;
-        sumw = 0;
+
     }
 
     public void merge(){
@@ -73,6 +73,20 @@ public class Indexer {
     }*/
 
     public void index(Multimap<String,Integer> tokens, Integer docId) {
+        double sumw = 0;
+
+
+        for(String term : tokens.keySet()){
+           // merged_index.put(term,new HashMap<>());
+            //Map<Integer,Tuple<Double,List<Integer>>> entry = merged_index.get(term);
+            Collection<Integer> pos = tokens.get(term);
+            int t_frequency = pos.size();
+            double tf = 1 + Math.log10(t_frequency); // term frequency
+            sumw+=tf*tf;
+
+        }
+
+        double norm = Math.sqrt(sumw);
 
         for(String term : tokens.keySet()){
             merged_index.put(term,new HashMap<>());
@@ -80,10 +94,12 @@ public class Indexer {
             Collection<Integer> pos = tokens.get(term);
             int t_frequency = pos.size();
             double tf = 1 + Math.log10(t_frequency); // term frequency
-            sumw+=tf*tf;
-            entry.put(docId,new Tuple(tf,new ArrayList<Integer>(pos)));
+
+
+            entry.put(docId,new Tuple(tf/norm,new ArrayList<Integer>(pos)));
             merged_index.put(term,entry);
         }
+
         /*for (Map.Entry<String, List<Integer>> entry : tokens.entrySet()) {
             if (!index.containsKey(entry.getKey()))
                 index.put(entry.getKey(), entry.getValue());
@@ -106,14 +122,25 @@ public class Indexer {
         //termo , doc, peso da pesquisa (tf), posicao no doc
         //LTC.LNC policy
 
-        double norm = Math.sqrt(sumw);
+       /* double norm = Math.sqrt(sumw);
         for(Map.Entry<String, Map<Integer, Tuple<Double, List<Integer>>>> entry: merged_index.entrySet()){
             for(Map.Entry<Integer, Tuple<Double, List<Integer>>> nested_entry : entry.getValue().entrySet()){
                 double weigth = nested_entry.getValue().x;
                 weigth = weigth / norm;
                 nested_entry.setValue(new Tuple<Double,List<Integer>>(weigth,nested_entry.getValue().y));
             }
+
+
+        }*/
+
+        if (memory.getCurrentMemory() >= (mmem*0.85)) {
+            System.out.println("utils.Memory usage is high - Saving Index current state before the next tf-idf indexation");
+            free();
+            System.gc();
+            System.out.println("Saved");
         }
+
+       // serialize();
         /*for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {
             ArrayList<Double> tfs = new ArrayList<>();
             String token = entry.getKey();
@@ -157,7 +184,7 @@ public class Indexer {
     }
 
     public void free(){
-        merge();
+        //merge();
         serialize();
     }
 
