@@ -24,14 +24,14 @@ public class Tokenizer {
     StopwordSet stopwordSet;
     //private Map<String, Map<Integer, List<Integer>>> tokens; //tokens: token -> docid -> posiçoes
     //private Map<String,List<Integer>> tokens; //token->posições
-    private Multimap<String,Integer> tokens; //token ->posições
+    //private Multimap<String,Integer> tokens; //token ->posições
 
     /**
      * tokenizer.Tokenizer class constructor.
      */
     public Tokenizer(URI stopUR) {
         //this.tokens = new HashMap<>();
-        this.tokens = ArrayListMultimap.create();
+        //this.tokens = ArrayListMultimap.create();
         this.stopwordSet = new StopwordSet(stopUR);
     }
 
@@ -51,8 +51,10 @@ public class Tokenizer {
      *
      * @param doc document.Doc to tokenize and stem
      */
-    public void tokenize(Doc doc) {
-        Scanner sc = new Scanner(doc.getDataStream());
+    public Multimap<String,Integer> tokenize(Doc doc) {
+        Multimap<String,Integer> tokens = ArrayListMultimap.create(); //token ->posições
+
+        //Scanner sc = new Scanner(doc.getDataStream());
         BreakIterator boundary = BreakIterator.getWordInstance();
         boundary.setText(doc.getDataStream());
         String token;
@@ -83,6 +85,8 @@ public class Tokenizer {
             }
             idx++;
         }
+
+        return tokens;
         //k
         /*
         while (sc.hasNext()) {
@@ -99,7 +103,7 @@ public class Tokenizer {
             }
             idx++;
         }*/
-        sc.close();
+       // sc.close();
     }
 
     /**
@@ -107,9 +111,9 @@ public class Tokenizer {
      *
      * @return Set of strings.
      */
-    public Multimap<String,  Integer> getTokens() {
+    /*public Multimap<String,  Integer> getTokens() {
         return tokens;
-    }
+    }*/
 
     /**
      * Auxiliar function to print every token.

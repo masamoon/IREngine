@@ -1,5 +1,6 @@
 package document;
 
+import com.google.common.collect.Multimap;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.jsoup.Jsoup;
@@ -76,8 +77,8 @@ public class CsvDocumentProcessor implements DocumentProcessor {
                 }
                 Integer docId = Integer.parseInt(record.get("Id"));
 
-                tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
-                idx.index(tokenizer.getTokens(),docId);
+                Multimap<String,Integer> tokenized = tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
+                idx.index(tokenized,docId);
                 idx.tfIdfIndex();
 
             }

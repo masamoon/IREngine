@@ -85,6 +85,7 @@ public class Indexer {
 
         }*/
 
+
     }
 
     public void tfIdfIndex(){
