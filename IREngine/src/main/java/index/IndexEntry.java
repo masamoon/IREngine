@@ -1,6 +1,7 @@
 package index;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Andre on 23/11/2016.
@@ -46,16 +47,17 @@ public class IndexEntry {
     }
 
     public String toString(){
-        StringBuilder stringBuilder = new StringBuilder();
+       // StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append(doc_id+"->"+weight+"[");
+        //stringBuilder.append(doc_id+"="+weight+"[");
 
-        for(Integer pos : positions){
-            stringBuilder.append(pos+",");
-        }
-        stringBuilder.append("]");
+        String pos = positions.stream()
+                .map(i -> i.toString())
+                .collect(Collectors.joining(","));
 
-        return stringBuilder.toString();
+        String str = new String (doc_id+"="+weight+"["+pos+"]\n");
+
+        return str;
 
     }
 }
