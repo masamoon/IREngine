@@ -79,7 +79,7 @@ public class CsvDocumentProcessor implements DocumentProcessor {
 
                 Multimap<String,Integer> tokenized = tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
                 idx.index(tokenized,docId);
-               // idx.tfIdfIndex();
+                idx.tfIdfIndex();
 
             }
             idx.merge();

@@ -105,7 +105,16 @@ public class Indexer {
     public void tfIdfIndex(){
         //termo , doc, peso da pesquisa (tf), posicao no doc
         //LTC.LNC policy
-        for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {
+
+        double norm = Math.sqrt(sumw);
+        for(Map.Entry<String, Map<Integer, Tuple<Double, List<Integer>>>> entry: merged_index.entrySet()){
+            for(Map.Entry<Integer, Tuple<Double, List<Integer>>> nested_entry : entry.getValue().entrySet()){
+                double weigth = nested_entry.getValue().x;
+                weigth = weigth / norm;
+                nested_entry.setValue(new Tuple<Double,List<Integer>>(weigth,nested_entry.getValue().y));
+            }
+        }
+        /*for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {
             ArrayList<Double> tfs = new ArrayList<>();
             String token = entry.getKey();
             tfidf_index.put(token,new HashMap<>());
@@ -135,7 +144,7 @@ public class Indexer {
             System.gc();
             System.out.println("Saved");
         }
-        //serialize();
+        //serialize();*/
     }
 
     public void printTfIdIndex(){
