@@ -47,7 +47,7 @@ public class IndexEntry {
     }
 
     public String toString(){
-        StringBuilder stringBuilder = new StringBuilder();
+       // StringBuilder stringBuilder = new StringBuilder();
 
         //stringBuilder.append(doc_id+"="+weight+"[");
 
@@ -55,11 +55,9 @@ public class IndexEntry {
                 .map(i -> i.toString())
                 .collect(Collectors.joining(","));
 
-        stringBuilder.append(doc_id+"="+weight+"["+pos+"]\n");
+        String str = new String (doc_id+"="+weight+"["+pos+"]\n");
 
-
-
-        return stringBuilder.toString();
+        return str;
 
     }
 }
