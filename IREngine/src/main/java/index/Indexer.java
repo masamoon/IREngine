@@ -2,6 +2,7 @@ package index;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultimap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,6 +25,7 @@ public class Indexer {
 
     private URI serializeTo;
     private final int mmem; //maxMemory
+    private int serNum;
 
 
 
@@ -39,6 +41,7 @@ public class Indexer {
 //token -> Map< doc_ids, "weight:pos">
 
     public Indexer(int mem) {
+        serNum = 0;
         index = new TreeMap<>();
         tfidf_index = new TreeMap<>();
         merged_index = ArrayListMultimap.create();
@@ -102,6 +105,13 @@ public class Indexer {
             IndexEntry indexEntry = new IndexEntry(docId,tf*norm,new ArrayList<Integer>(pos));
             //entry.put(docId,new Tuple(tf*norm,new ArrayList<Integer>(pos)));
             merged_index.put(term,indexEntry);
+        }
+
+        if (memory.getCurrentMemory() >= (mmem*0.85)) {
+            System.out.println("utils.Memory usage is high - Saving Index current state before the next tf-idf indexation");
+            free();
+            System.gc();
+            System.out.println("Saved");
         }
 
         /*for (Map.Entry<String, List<Integer>> entry : tokens.entrySet()) {
@@ -189,10 +199,27 @@ public class Indexer {
 
     public void free(){
         //merge();
+        serNum++;
         serialize();
+
+        merged_index = ArrayListMultimap.create();
     }
 
     public void serialize() {
+
+        try{
+            FileWriter fw = new FileWriter("resources/output/"+serNum+".idx");
+            for( Map.Entry<String,IndexEntry> idxEntry : merged_index.entries()){
+                fw.write(idxEntry.getKey()+":"+idxEntry.getValue().toString());
+            }
+            fw.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        catch(NullPointerException e){
+            e.printStackTrace();
+        }
+
         /*try{
             Gson gson = new Gson();
 
