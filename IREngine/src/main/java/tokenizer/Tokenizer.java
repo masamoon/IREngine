@@ -7,6 +7,7 @@ package tokenizer; /**
  */
 
 import org.tartarus.snowball.ext.englishStemmer;
+import com.google.common.collect.*;
 
 import java.net.URI;
 import java.text.BreakIterator;
@@ -21,13 +22,16 @@ import document.Doc;
 public class Tokenizer {
 
     StopwordSet stopwordSet;
-    private Map<String, Map<Integer, List<Integer>>> tokens; //tokens: token -> docid -> posiçoes
+    //private Map<String, Map<Integer, List<Integer>>> tokens; //tokens: token -> docid -> posiçoes
+    //private Map<String,List<Integer>> tokens; //token->posições
+    private Multimap<String,Integer> tokens; //token ->posições
 
     /**
      * tokenizer.Tokenizer class constructor.
      */
     public Tokenizer(URI stopUR) {
-        this.tokens = new HashMap<>();
+        //this.tokens = new HashMap<>();
+        this.tokens = ArrayListMultimap.create();
         this.stopwordSet = new StopwordSet(stopUR);
     }
 
@@ -60,15 +64,22 @@ public class Tokenizer {
              start = end, end = boundary.next()) {
             token = doc.getDataStream().substring(start,end);
            // System.out.println(token);
-            if (!stopwordSet.contains(token) && !stopwordSet.contains(stem(token))) { // to not tokenize the stopwords!!
-                token = stem(token);
-                if (!tokens.containsKey(token))
-                    tokens.put(token, new HashMap<>());
+            String stemmedStr = stem(token);
+            if (!stopwordSet.contains(token) && !stopwordSet.contains(stemmedStr)) { // to not tokenize the stopwords!!
+                token = stemmedStr;
+                /*if (!tokens.containsKey(token)) {
+                    //tokens.put(token, new HashMap<>());
+                    tokens.put(token, new ArrayList<>());
+                    tokens.get(token).add(idx);
+                }
+                else{
+                    tokens.get(token).add(idx);
+                }*/
+                tokens.put(token,idx);
+                //if (!tokens.get(token).containsKey(doc.getId()))
+                  //  tokens.get(token).put(doc.getId(), new ArrayList<>());
 
-                if (!tokens.get(token).containsKey(doc.getId()))
-                    tokens.get(token).put(doc.getId(), new ArrayList<>());
-
-                tokens.get(token).get(doc.getId()).add(idx);
+                //tokens.get(token).get(doc.getId()).add(idx);
             }
             idx++;
         }
@@ -96,14 +107,14 @@ public class Tokenizer {
      *
      * @return Set of strings.
      */
-    public Map<String, Map<Integer, List<Integer>>> getTokens() {
+    public Multimap<String,  Integer> getTokens() {
         return tokens;
     }
 
     /**
      * Auxiliar function to print every token.
      */
-    public void printTokens() {
+   /* public void printTokens() {
         System.out.println(tokens.entrySet().size());
         for (Map.Entry<String, Map<Integer, List<Integer>>> entry : tokens.entrySet()) {
             System.out.println(entry.getKey() + " : ");
@@ -111,7 +122,7 @@ public class Tokenizer {
                 System.out.println("- " + nested_entry.getKey() + ": " + nested_entry.getValue());
             }
         }
-    }
+    }*/
 
 
 }

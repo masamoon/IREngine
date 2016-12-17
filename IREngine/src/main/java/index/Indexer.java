@@ -1,5 +1,6 @@
 package index;
 
+import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -68,8 +69,8 @@ public class Indexer {
         load();
     }*/
 
-    public void index(Map<String, Map<Integer, List<Integer>>> tokens) {
-        for (Map.Entry<String, Map<Integer, List<Integer>>> entry : tokens.entrySet()) {
+    public void index(Multimap<String,Integer> tokens, Integer docId) {
+        /*for (Map.Entry<String, List<Integer>> entry : tokens.entrySet()) {
             if (!index.containsKey(entry.getKey()))
                 index.put(entry.getKey(), entry.getValue());
             else {
@@ -82,7 +83,8 @@ public class Indexer {
                 }
             }
 
-        }
+        }*/
+
     }
 
     public void tfIdfIndex(){

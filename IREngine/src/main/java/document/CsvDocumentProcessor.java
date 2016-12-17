@@ -74,9 +74,10 @@ public class CsvDocumentProcessor implements DocumentProcessor {
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
+                Integer docId = Integer.parseInt(record.get("Id"));
 
                 tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
-                idx.index(tokenizer.getTokens());
+                idx.index(tokenizer.getTokens(),docId);
                 idx.tfIdfIndex();
 
             }
