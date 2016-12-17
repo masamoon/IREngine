@@ -23,6 +23,8 @@ public class Indexer {
     private URI serializeTo;
     private final int mmem; //maxMemory
 
+    private double sumw;
+
    // private Map<String,Map<Integer,Integer>> tf_index;
 
     //TODO: merged index->  term: doc_id[weight,[pos list]]
@@ -40,6 +42,7 @@ public class Indexer {
         serializeTo = null;
         memory = new Memory();
         mmem = mem;
+        sumw = 0;
     }
 
     public void merge(){
@@ -72,11 +75,14 @@ public class Indexer {
     public void index(Multimap<String,Integer> tokens, Integer docId) {
 
         for(String term : tokens.keySet()){
-            index.put(term,new HashMap<>());
-            Map<Integer,List<Integer>> entry = index.get(term);
+            merged_index.put(term,new HashMap<>());
+            Map<Integer,Tuple<Double,List<Integer>>> entry = merged_index.get(term);
             Collection<Integer> pos = tokens.get(term);
-            entry.put(docId,new ArrayList<Integer>(pos));
-            index.put(term,entry);
+            int t_frequency = pos.size();
+            double tf = 1 + Math.log10(t_frequency); // term frequency
+            sumw+=tf*tf;
+            entry.put(docId,new Tuple(tf,new ArrayList<Integer>(pos)));
+            merged_index.put(term,entry);
         }
         /*for (Map.Entry<String, List<Integer>> entry : tokens.entrySet()) {
             if (!index.containsKey(entry.getKey()))
