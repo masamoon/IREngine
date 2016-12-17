@@ -1,16 +1,17 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
+package index;
 
-import java.io.FileNotFoundException;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import utils.Memory;
+import utils.Tuple;
 
 public class Indexer {
     private final Memory memory;
@@ -25,7 +26,7 @@ public class Indexer {
 
     //TODO: merged index->  term: doc_id[weight,[pos list]]
 
-    private Map<String,Map<Integer,Tuple<Double,List<Integer>>>> merged_index;
+    private Map<String,Map<Integer, Tuple<Double,List<Integer>>>> merged_index;
 
 
 
@@ -61,7 +62,7 @@ public class Indexer {
         this.serializeTo = uri;
     }
 /*
-    public Indexer(URI uri) {
+    public index.Indexer(URI uri) {
         this();
         //load(uri);
         load();
@@ -112,7 +113,7 @@ public class Indexer {
 
         }
         if (memory.getCurrentMemory() >= (mmem*0.85)) {
-            System.out.println("Memory usage is high - Saving Index current state before the next tf-idf indexation");
+            System.out.println("utils.Memory usage is high - Saving Index current state before the next tf-idf indexation");
             free();
             System.gc();
             System.out.println("Saved");
@@ -139,7 +140,7 @@ public class Indexer {
             Gson gson = new Gson();
 
             //TODO: optional? Garantir que o ficheiro está vazio, se nao estiver então fazer merge do q está no ficheiro com o q existe neste index?
-            Map<String,Map<Integer,Tuple<Double,List<Integer>>>> aux;
+            Map<String,Map<Integer, Tuple<Double,List<Integer>>>> aux;
             Set<Character> abc = new HashSet<>();
             merged_index.keySet().forEach(key -> abc.add(key.charAt(0)));
 
@@ -148,10 +149,10 @@ public class Indexer {
                 aux = merged_index.entrySet()
                         .stream()
                         .collect(Collectors.toMap(Map.Entry::getKey,
-                                e -> new HashMap<Integer,Tuple<Double,List<Integer>>>(e.getValue())));
+                                e -> new HashMap<Integer, Tuple<Double,List<Integer>>>(e.getValue())));
 
                 aux.entrySet().removeIf(key -> key.toString().charAt(0) != c);
-                gson.toJson(aux, new TypeToken<Map<String,Map<Integer,Tuple<Double,List<Integer>>>>>(){}.getType(),writer);
+                gson.toJson(aux, new TypeToken<Map<String,Map<Integer, Tuple<Double,List<Integer>>>>>(){}.getType(),writer);
                 writer.close();
             }
             merged_index = new TreeMap<>();
@@ -169,7 +170,7 @@ public class Indexer {
     public void load(URI uri) {
         try {
             Gson gson = new Gson();
-            merged_index = gson.fromJson(new FileReader(uri.getPath()),new TypeToken<Map<String,Map<Integer,Tuple<Double,List<Integer>>>>>(){}.getType());
+            merged_index = gson.fromJson(new FileReader(uri.getPath()),new TypeToken<Map<String,Map<Integer, Tuple<Double,List<Integer>>>>>(){}.getType());
         }catch(IOException e){
             e.printStackTrace();
         }

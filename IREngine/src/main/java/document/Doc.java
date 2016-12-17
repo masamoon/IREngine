@@ -1,4 +1,4 @@
-/**
+package document; /**
  * Aveiro University, Department of Electronics, Telecommunications and Informatics.
  * MIECT - Information Retrieval
  * 2016/2017
@@ -9,7 +9,7 @@
 import java.net.URI;
 
 /**
- * Doc data type, which is responsible for storing
+ * document.Doc data type, which is responsible for storing
  * the document information.
  */
 public class Doc {
@@ -21,7 +21,7 @@ public class Doc {
     private URI uri;
 
     /**
-     * Doc class constructor.
+     * document.Doc class constructor.
      *
      * @param id         identifier of the document
      * @param dataStream stream of data present in the document

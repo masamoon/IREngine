@@ -1,4 +1,4 @@
-/**
+package main; /**
  * Aveiro University, Department of Electronics, Telecommunications and Informatics.
  * MIECT - Information Retrieval
  * 2016/2017
@@ -7,11 +7,9 @@
  */
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import org.apache.commons.cli.*;
 
-import javax.print.URIException;
+import index.Indexer;
+import reader.CorpusReader;
 
 /**
  * Main Program for Information Retrieval Engine
@@ -46,7 +44,7 @@ public class MainEngine {
         //options.addOption("it","indexTo", true, "File where to save the index");
         options.addOption("b","boolean", true, "File where to save the boolean index");
         options.addOption("t","times",false,"Prints runtime times");
-        options.addOption("m","Memory",true,"Define maximum memory to use");
+        options.addOption("m","utils.Memory",true,"Define maximum memory to use");
 
 
         HelpFormatter formatter = new HelpFormatter();
@@ -64,7 +62,7 @@ public class MainEngine {
                     memoryToUse = 512;
                 }
                 URI corpusUri, index, booleanIndex;
-                Indexer idx = new Indexer(memoryToUse);
+                index.Indexer idx = new index.Indexer(memoryToUse);
                 if(cmd.hasOption("i")){
                     index = URI.create(cmd.getOptionValue("i"));
                 }
@@ -76,15 +74,15 @@ public class MainEngine {
                 if(cmd.hasOption("c")) {
                     corpusUri = URI.create(cmd.getOptionValue("c"));
                     //TODO: path do stopword file como argumento!
-                    CorpusReader crd = new CorpusReader(corpusUri, URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/stopwords_english.txt"));
+                    reader.CorpusReader crd = new reader.CorpusReader(corpusUri, URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/stopwords_english.txt"));
 
                     idx.setSerializeTo(index);
                    // idx.load(index);
                     crd.getProcessedDocuments(memoryToUse);
                     //idx.load(index);
-                    //List<Doc> dsp = crd.getProcessedDocuments();
-                    /*Tokenizer tokenizer = new Tokenizer();
-                    for (Doc d : dsp) {
+                    //List<document.Doc> dsp = crd.getProcessedDocuments();
+                    /*tokenizer.Tokenizer tokenizer = new tokenizer.Tokenizer();
+                    for (document.Doc d : dsp) {
                         tokenizer.tokenize(d);
                     }
                     idx.index(tokenizer.getTokens());*/

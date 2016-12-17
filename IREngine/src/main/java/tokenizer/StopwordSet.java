@@ -1,4 +1,4 @@
-/**
+package tokenizer; /**
  * Aveiro University, Department of Electronics, Telecommunications and Informatics.
  * MIECT - Information Retrieval
  * 2016/2017
@@ -13,7 +13,7 @@ import java.util.Set;
 
 
 /**
- * StopwordSet data type, which is responsible for
+ * tokenizer.StopwordSet data type, which is responsible for
  * storing the stop word list.
  */
 public class StopwordSet {
@@ -21,7 +21,7 @@ public class StopwordSet {
     Set<String> stopwords = new HashSet<>();
 
     /**
-     * StopwordSet class constructor.
+     * tokenizer.StopwordSet class constructor.
      * Retrieves the file that contains the stopword list
      * and adds it to structure without repetitions (Set).
      */
@@ -43,7 +43,7 @@ public class StopwordSet {
 
 
     /**
-     * Verifies if the StopwordSet contains a given word.
+     * Verifies if the tokenizer.StopwordSet contains a given word.
      *
      * @param word String to check if it is present in the set.
      * @return 1 if contains, 0 otherwise.

@@ -1,4 +1,4 @@
-/**
+package reader; /**
  * Aveiro University, Department of Electronics, Telecommunications and Informatics.
  * MIECT - Information Retrieval
  * 2016/2017
@@ -11,9 +11,13 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import document.ArffDocumentProcessor;
+import document.CsvDocumentProcessor;
+import document.Doc;
+
 /**
  * Corpus Reader data type, which is responsible for reading
- * the files and select the respective Doc Processor.
+ * the files and select the respective document.Doc Processor.
  */
 public class CorpusReader {
 
@@ -36,7 +40,7 @@ public class CorpusReader {
 
     /**
      * Iterates the files collection to retrieve the respective
-     * list of Doc Processors. Verifies if the URI corresponds
+     * list of document.Doc Processors. Verifies if the URI corresponds
      * to a File or a Directory path and invokes getDocumentProcessor
      * for each File.
      *
@@ -57,7 +61,7 @@ public class CorpusReader {
 
     /**
      * Verifies the extension of the file and adds
-     * the respective Doc Processor to the list.
+     * the respective document.Doc Processor to the list.
      *
      * @param file file to retrieve a processor.
      */

@@ -1,4 +1,4 @@
-/**
+package search; /**
  * Aveiro University, Department of Electronics, Telecommunications and Informatics.
  * MIECT - Information Retrieval
  * 2016/2017
@@ -7,12 +7,12 @@
  */
 
 /**
- * Searcher data type, which is reponsible for querying the index.
+ * search.Searcher data type, which is reponsible for querying the index.
  */
 public class Searcher {
 
     /**
-     * Searcher class constructor.
+     * search.Searcher class constructor.
      */
     public Searcher() {
     }

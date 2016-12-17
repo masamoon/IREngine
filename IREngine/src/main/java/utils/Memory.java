@@ -1,3 +1,5 @@
+package utils;
+
 public class Memory {
     private Runtime runtime;
     public Memory()

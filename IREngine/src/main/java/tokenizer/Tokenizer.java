@@ -1,4 +1,4 @@
-/**
+package tokenizer; /**
  * Aveiro University, Department of Electronics, Telecommunications and Informatics.
  * MIECT - Information Retrieval
  * 2016/2017
@@ -11,8 +11,10 @@ import org.tartarus.snowball.ext.englishStemmer;
 import java.net.URI;
 import java.util.*;
 
+import document.Doc;
+
 /**
- * Tokenizer data type, which is responsible for generating tokens
+ * tokenizer.Tokenizer data type, which is responsible for generating tokens
  * from a list of Documents
  */
 public class Tokenizer {
@@ -21,7 +23,7 @@ public class Tokenizer {
     private Map<String, Map<Integer, List<Integer>>> tokens; //tokens: token -> docid -> posiçoes
 
     /**
-     * Tokenizer class constructor.
+     * tokenizer.Tokenizer class constructor.
      */
     public Tokenizer(URI stopUR) {
         this.tokens = new HashMap<>();
@@ -31,11 +33,10 @@ public class Tokenizer {
     /**
      * Applies the stemming operation using the Porter Stemmer.
      */
-    public static String stem(String a) {
+    public String stem(String a) {
         englishStemmer stema = new englishStemmer();
         stema.setCurrent(a);
         stema.stem();
-
         return stema.getCurrent();
     }
 
@@ -43,7 +44,7 @@ public class Tokenizer {
      * Iterates each word in the data stream of the
      * doc to generate the set of tokens.
      *
-     * @param doc Doc to tokenize and stem
+     * @param doc document.Doc to tokenize and stem
      */
     public void tokenize(Doc doc) {
         Scanner sc = new Scanner(doc.getDataStream());
