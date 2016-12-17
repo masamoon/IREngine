@@ -70,6 +70,14 @@ public class Indexer {
     }*/
 
     public void index(Multimap<String,Integer> tokens, Integer docId) {
+
+        for(String term : tokens.keySet()){
+            index.put(term,new HashMap<>());
+            Map<Integer,List<Integer>> entry = index.get(term);
+            Collection<Integer> pos = tokens.get(term);
+            entry.put(docId,new ArrayList<Integer>(pos));
+            index.put(term,entry);
+        }
         /*for (Map.Entry<String, List<Integer>> entry : tokens.entrySet()) {
             if (!index.containsKey(entry.getKey()))
                 index.put(entry.getKey(), entry.getValue());
