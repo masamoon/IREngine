@@ -6,26 +6,20 @@ import java.util.List;
  * Created by Andre on 23/11/2016.
  */
 public class IndexEntry {
-    public String term;
+    //public String term;
     public Integer doc_id;
     public Double weight;
     public List<Integer> positions;
 
 
-    public IndexEntry(String term, Integer doc_id, Double weight, List<Integer> positions) {
-        this.term = term;
+    public IndexEntry( Integer doc_id, Double weight, List<Integer> positions) {
+
         this.doc_id = doc_id;
         this.weight = weight;
         this.positions = positions;
     }
 
-    public String getTerm() {
-        return term;
-    }
 
-    public void setTerm(String term) {
-        this.term = term;
-    }
 
     public Integer getDoc_id() {
         return doc_id;
@@ -50,4 +44,6 @@ public class IndexEntry {
     public void setPositions(List<Integer> positions) {
         this.positions = positions;
     }
+
+
 }
