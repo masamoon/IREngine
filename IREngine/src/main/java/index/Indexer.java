@@ -199,7 +199,7 @@ public class Indexer {
 
     public void free(){
         //merge();
-        serNum++;
+
         serialize();
 
 
@@ -221,16 +221,25 @@ public class Indexer {
             e.printStackTrace();
         }*/
 
-
+        serNum++;
         try {
             FileWriter fw = new FileWriter("resources/output/"+serNum+".idx", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw);
-            for (Map.Entry<String, Collection<IndexEntry>> idxEntry : merged_index.asMap().entrySet()) {
-                //System.out.println("serializing ");
 
-                out.println(idxEntry.getKey() + ":" + idxEntry.getValue().toString());
+            for (String term : merged_index.keySet()) {
+               // System.out.println("serializing "+term);
+                out.print(term + ":");
+                for(IndexEntry idx : merged_index.get(term)) {
+                    out.print(idx.toString()+";");
+                }
+                out.println();
+
             }
+
+            fw.close();
+
+
 
 
         }catch(IOException e){

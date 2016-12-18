@@ -65,10 +65,11 @@ public class Tokenizer {
              end != BreakIterator.DONE;
              start = end, end = boundary.next()) {
             token = doc.getDataStream().substring(start,end);
-           // System.out.println(token);
-            String stemmedStr = stem(token);
-            if (!stopwordSet.contains(token) && !stopwordSet.contains(stemmedStr)) { // to not tokenize the stopwords!!
-                token = stemmedStr;
+            if(!token.equals(" ")) {
+              //  System.out.println(token);
+                String stemmedStr = stem(token);
+                if (!stopwordSet.contains(token) && !stopwordSet.contains(stemmedStr)) { // to not tokenize the stopwords!!
+                    token = stemmedStr;
                 /*if (!tokens.containsKey(token)) {
                     //tokens.put(token, new HashMap<>());
                     tokens.put(token, new ArrayList<>());
@@ -77,11 +78,13 @@ public class Tokenizer {
                 else{
                     tokens.get(token).add(idx);
                 }*/
-                tokens.put(token,idx);
-                //if (!tokens.get(token).containsKey(doc.getId()))
-                  //  tokens.get(token).put(doc.getId(), new ArrayList<>());
+                    // System.out.println(stemmedStr);
+                    tokens.put(token, idx);
+                    //if (!tokens.get(token).containsKey(doc.getId()))
+                    //  tokens.get(token).put(doc.getId(), new ArrayList<>());
 
-                //tokens.get(token).get(doc.getId()).add(idx);
+                    //tokens.get(token).get(doc.getId()).add(idx);
+                }
             }
             idx++;
         }

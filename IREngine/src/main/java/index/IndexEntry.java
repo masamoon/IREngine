@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Andre on 23/11/2016.
  */
-public class IndexEntry implements Comparable<Object>{
+public class IndexEntry implements Comparable<IndexEntry>{
     //public String term;
     public Integer doc_id;
     public Double weight;
@@ -55,14 +55,20 @@ public class IndexEntry implements Comparable<Object>{
                 .map(i -> i.toString())
                 .collect(Collectors.joining(","));
 
-        String str = new String (doc_id+"="+weight+"["+pos+"]\n");
+        String str = new String (doc_id+"="+weight+"["+pos+"]");
 
         return str;
 
     }
 
     @Override
-    public int compareTo(Object o) {
-        return 0;
+    public int compareTo(IndexEntry o) {
+        if(o.getDoc_id()< doc_id){
+            return -1;
+        }else if(o.getDoc_id()> doc_id){
+            return 1;
+        }else{
+            return 0;
+        }
     }
 }

@@ -55,7 +55,9 @@ public class CsvDocumentProcessor implements DocumentProcessor {
 
                         StringBuilder builder = new StringBuilder();
                         for (String s : words) {
-                            builder.append(" ").append(s);
+                            if(s.length()>3) {
+                                builder.append(" ").append(s.trim());
+                            }
                         }
                         clean_line.append(builder.toString());
                     }
@@ -68,10 +70,13 @@ public class CsvDocumentProcessor implements DocumentProcessor {
                     String words[] = doc.body().text().replace(doc.select("code").text(), "").replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
                     StringBuilder builder = new StringBuilder();
                     for (String s : words) {
-                        builder.append(" ").append(s);
+                        if(s.length()>3) {
+                            builder.append(" ").append(s.trim());
+                        }
 
                     }
                     clean_line.append(builder.toString());
+                    //System.out.println(clean_line.toString());
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
