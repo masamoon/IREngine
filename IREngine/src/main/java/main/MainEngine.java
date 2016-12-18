@@ -7,6 +7,8 @@ package main; /**
  */
 
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import index.Indexer;
 import reader.CorpusReader;
@@ -20,16 +22,20 @@ public class MainEngine {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+
+        Path basepath = Paths.get("resources");
+
         long startTime = System.nanoTime();
 
-        URI corpusUri = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/Answers.csv");
+        URI corpusUri = basepath.resolve("corpusBig").resolve("Answers.csv").toUri(); //URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/Answers.csv");
         //URI corpusUri = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/csv/Answers_mini.csv");
-        URI stop = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/stopwords_english.txt");
+        URI stop = basepath.resolve("stopwords_english.txt").toUri();
+        URI serTo = basepath.resolve("output").toUri(); // URI.create(System.getProperty("user.dir").replace("\\", "/") + "resources/output");
+
         CorpusReader crd = new CorpusReader(corpusUri, stop);
 
-        URI serTo = URI.create(System.getProperty("user.dir").replace("\\", "/") + "resources/output");
-        Indexer idx = new Indexer(512);
-        idx.setSerializeTo(serTo);
+        Indexer idx = new Indexer(512); // REALLY ??? make this dynamic by giving or taking memory from the VM
+        idx.setSerializeTo(serTo); // TODO: move to constructor
         crd.getProcessedDocuments(512);
 
         long endTime = System.nanoTime();

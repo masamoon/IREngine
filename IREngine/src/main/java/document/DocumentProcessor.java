@@ -26,7 +26,7 @@ public interface DocumentProcessor extends Iterable<Doc> {
         protected Doc currentDoc;
         private boolean first;
 
-        public DocumentIterator(Path path) {
+        protected DocumentIterator(Path path) {
             this.path = path;
             first = true;
 

@@ -27,7 +27,7 @@ public class Doc {
      * @param dataStream stream of data present in the document
      * @param uri        resource identification of the document
      */
-    public Doc(int id, String dataStream, URI uri) {
+    Doc(int id, String dataStream, URI uri) {
         this.id = id;
         this.dataStream = dataStream;
         this.uri = uri;

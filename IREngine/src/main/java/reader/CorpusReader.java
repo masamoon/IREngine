@@ -28,14 +28,10 @@ public class CorpusReader {
      * Corpus Reader class constructor.
      * Gets the URI of the directory/file to iterate.
      */
-    public CorpusReader() {
-        docsToProcess = new ArrayList<>();
-    }
-
     public CorpusReader(URI uri, URI stopURI) {
-        this();
+       this. docsToProcess = new ArrayList<>();
         this.uri = uri;
-        stop = stopURI;
+        this.stop = stopURI;
     }
 
     /**
@@ -50,10 +46,10 @@ public class CorpusReader {
         File aux = new File(uri.getPath());
         if (aux.isDirectory()) {
             for (File file : aux.listFiles()) {
-                getDocumentProcessor(file,maxMem);
+                getDocumentProcessor(file, maxMem);
             }
         } else {
-            getDocumentProcessor(aux,maxMem);
+            getDocumentProcessor(aux, maxMem);
         }
 
         //return docsToProcess;
@@ -74,9 +70,9 @@ public class CorpusReader {
                     docsToProcess.addAll(ArffDocumentProcessor.process(file));
                     break;
                 case "csv":
-                    CsvDocumentProcessor.process(file,maxMem, stop);
+                    CsvDocumentProcessor.process(file, maxMem, stop);
                     break;
-              }
+            }
 
         }
     }

@@ -1,74 +1,55 @@
 package index;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
  * Created by Andre on 23/11/2016.
  */
-public class IndexEntry implements Comparable<IndexEntry>{
+public class IndexEntry implements Comparable<IndexEntry> {
     //public String term;
-    public Integer doc_id;
-    public Double weight;
-    public List<Integer> positions;
+    private Integer doc_id;
+    private Double weight;
+    private Collection<Integer> positions;
 
 
-    public IndexEntry( Integer doc_id, Double weight, List<Integer> positions) {
+    IndexEntry(Integer doc_id, Double weight, Collection<Integer> positions) {
 
         this.doc_id = doc_id;
         this.weight = weight;
         this.positions = positions;
     }
-
 
 
     public Integer getDoc_id() {
         return doc_id;
     }
 
-    public void setDoc_id(Integer doc_id) {
-        this.doc_id = doc_id;
-    }
 
     public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public List<Integer> getPositions() {
+    public Collection<Integer> getPositions() {
         return positions;
     }
 
-    public void setPositions(List<Integer> positions) {
-        this.positions = positions;
-    }
-
-    public String toString(){
-       // StringBuilder stringBuilder = new StringBuilder();
+    public String toString() {
+        // StringBuilder stringBuilder = new StringBuilder();
 
         //stringBuilder.append(doc_id+"="+weight+"[");
-
+        StringBuilder str = new StringBuilder().append(doc_id).append("=").append(weight);
         String pos = positions.stream()
-                .map(i -> i.toString())
-                .collect(Collectors.joining(","));
-
-        String str = new String (doc_id+"="+weight+"["+pos+"]");
-
-        return str;
-
+                .map(Integer::toUnsignedString)
+                .collect(Collectors.joining(",", "[", "]"));
+        str.append(pos);
+        return str.toString();
     }
 
     @Override
     public int compareTo(IndexEntry o) {
-        if(o.getDoc_id()< doc_id){
-            return -1;
-        }else if(o.getDoc_id()> doc_id){
-            return 1;
-        }else{
-            return 0;
-        }
+        return Integer.compare(this.doc_id, o.doc_id);
     }
 }

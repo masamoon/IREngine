@@ -8,6 +8,9 @@ package tokenizer; /**
 
 import java.io.*;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,27 +21,15 @@ import java.util.Set;
  */
 public class StopwordSet {
 
-    Set<String> stopwords = new HashSet<>();
+    private Set<String> stopwords = new HashSet<>();
 
     /**
      * tokenizer.StopwordSet class constructor.
      * Retrieves the file that contains the stopword list
      * and adds it to structure without repetitions (Set).
      */
-    public StopwordSet(URI uri) {
-        File f = new File(uri.getPath());
-        try {
-            String line = null;
-            BufferedReader br = new BufferedReader(new FileReader(f));
-            while ((line = br.readLine()) != null) {
-                stopwords.add(line);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    StopwordSet(URI uri) throws IOException {
+        stopwords = new HashSet<>(Files.readAllLines(Paths.get(uri)));
     }
 
 

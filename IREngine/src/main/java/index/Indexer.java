@@ -1,56 +1,67 @@
 package index;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.TreeMultimap;
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.MultimapBuilder.ListMultimapBuilder;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import utils.Memory;
 import utils.Tuple;
 
-public class Indexer {
-    private final Memory memory;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.WRITE;
 
-    private Map<String, Map<Integer, List<Integer>>> index;
-    private Map<String,Map<Integer,Double>> tfidf_index; // term -> map < doc_id , weight >
+public class Indexer {
+    private static final ListMultimapBuilder<String, Object> builder = MultimapBuilder.treeKeys(String::compareTo).linkedListValues();
+    private static final Path destination = Paths.get("resources", "output");
+
+
+  //  private Map<String, Map<Integer, List<Integer>>> index;
+    //private Map<String, Map<Integer, Double>> tfidf_index; // term -> map < doc_id , weight >
 
     private URI serializeTo;
     private final int mmem; //maxMemory
     private int serNum;
 
 
-
-   // private Map<String,Map<Integer,Integer>> tf_index;
+    // private Map<String,Map<Integer,Integer>> tf_index;
 
     //TODO: merged index->  term: doc_id[weight,[pos list]]
 
     //private Map<String,Map<Integer, Tuple<Double,List<Integer>>>> merged_index;
-    private Multimap<String,IndexEntry> merged_index;
-
+    private Multimap<String, IndexEntry> merged_index;
 
 
 //token -> Map< doc_ids, "weight:pos">
 
     public Indexer(int mem) {
         serNum = 0;
-        index = new TreeMap<>();
-        tfidf_index = new TreeMap<>();
-        merged_index = TreeMultimap.create();
+       // index = new TreeMap<>();
+       // tfidf_index = new TreeMap<>();
+        merged_index = builder.build();
 
         serializeTo = null;
-        memory = new Memory();
         mmem = mem;
 
     }
 
-    public void merge(){/*
+    public void merge() {/*
         for( String term : tfidf_index.keySet()){
             if(!merged_index.containsKey(term))
                 merged_index.put(term, new HashMap<>());
@@ -67,7 +78,7 @@ public class Indexer {
         index = new TreeMap<>();*/
     }
 
-    public void setSerializeTo(URI uri){
+    public void setSerializeTo(URI uri) {
         this.serializeTo = uri;
     }
 /*
@@ -77,23 +88,22 @@ public class Indexer {
         load();
     }*/
 
-    public void index(Multimap<String,Integer> tokens, Integer docId) {
-        double sumw = 0;
+    public void index(Multimap<String, Integer> tokens, Integer docId) {
+        double sumw = 0.0;
 
 
-        for(String term : tokens.keySet()){
-           // merged_index.put(term,new HashMap<>());
+        for (String term : tokens.keySet()) {
+            // merged_index.put(term,new HashMap<>());
             //Map<Integer,Tuple<Double,List<Integer>>> entry = merged_index.get(term);
             Collection<Integer> pos = tokens.get(term);
             int t_frequency = pos.size();
             double tf = 1 + Math.log10(t_frequency); // term frequency
-            sumw+=tf*tf;
-
+            sumw += tf * tf;
         }
 
-        double norm = 1/Math.sqrt(sumw);
+        double norm = 1 / Math.sqrt(sumw);
 
-        for(String term : tokens.keySet()){
+        for (String term : tokens.keySet()) {
             //merged_index.put(term,new ArrayList<>());
             //Map<Integer,Tuple<Double,List<Integer>>> entry = merged_index.get(term);
             Collection<Integer> pos = tokens.get(term);
@@ -101,13 +111,13 @@ public class Indexer {
             double tf = 1 + Math.log10(t_frequency); // term frequency
 
 
-            IndexEntry indexEntry = new IndexEntry(docId,tf*norm,new ArrayList<Integer>(pos));
+            IndexEntry indexEntry = new IndexEntry(docId, tf * norm, new ArrayList<>(pos));
             //entry.put(docId,new Tuple(tf*norm,new ArrayList<Integer>(pos)));
-            merged_index.put(term,indexEntry);
+            merged_index.put(term, indexEntry);
 
         }
 
-        if (memory.getCurrentMemory() >= (mmem*0.85)) {
+        if (Memory.getCurrentMemory() >= (mmem * 0.85)) {
             System.out.println("utils.Memory usage is high - Saving Index current state before the next tf-idf indexation");
             free();
             System.gc();
@@ -132,7 +142,7 @@ public class Indexer {
 
     }
 
-    public void tfIdfIndex(){
+    //public void tfIdfIndex() {
         //termo , doc, peso da pesquisa (tf), posicao no doc
         //LTC.LNC policy
 
@@ -154,7 +164,7 @@ public class Indexer {
             System.out.println("Saved");
         }*/
 
-       // serialize();
+        // serialize();
         /*for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {
             ArrayList<Double> tfs = new ArrayList<>();
             String token = entry.getKey();
@@ -186,23 +196,20 @@ public class Indexer {
             System.out.println("Saved");
         }
         //serialize();*/
-    }
+  //  }
 
-    public void printTfIdIndex(){
+   /* public void printTfIdIndex() {
 
-        for(Map.Entry<String,Map<Integer,Double>> entry : tfidf_index.entrySet()){
-            for(Map.Entry<Integer,Double> nested_entry : entry.getValue().entrySet()){
-                System.out.println(entry.getKey()+" -> "+nested_entry.getKey()+" : "+nested_entry.getValue());
+        for (Map.Entry<String, Map<Integer, Double>> entry : tfidf_index.entrySet()) {
+            for (Map.Entry<Integer, Double> nested_entry : entry.getValue().entrySet()) {
+                System.out.println(entry.getKey() + " -> " + nested_entry.getKey() + " : " + nested_entry.getValue());
             }
         }
-    }
+    }*/
 
-    public void free(){
+    private void free() {
         //merge();
-
         serialize();
-
-
     }
 
     public void serialize() {
@@ -222,30 +229,32 @@ public class Indexer {
         }*/
 
         serNum++;
-        try {
-            FileWriter fw = new FileWriter("resources/output/"+serNum+".idx", true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            PrintWriter out = new PrintWriter(bw);
-
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(destination.resolve(serNum + ".idx"), CREATE, APPEND, WRITE)) {
             for (String term : merged_index.keySet()) {
-               // System.out.println("serializing "+term);
-                out.print(term + ":");
-                for(IndexEntry idx : merged_index.get(term)) {
-                    out.print(idx.toString()+";");
+                // System.out.println("serializing "+term);
+                bufferedWriter.append(term).append(':');
+                //out.print(term + ":");
+                for (IndexEntry idx : merged_index.get(term)) {
+                    bufferedWriter.append(idx.toString()).append(';');
                 }
-                out.println();
-
+                bufferedWriter.append('\n');
             }
-
-            fw.close();
-
-
-
-
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        merged_index = TreeMultimap.create();
+        //PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("resources/output/" + serNum + ".idx", true)));
+
+       /* for (String term : merged_index.keySet()) {
+            // System.out.println("serializing "+term);
+            out.print(term + ":");
+            for (IndexEntry idx : merged_index.get(term)) {
+                out.print(idx.toString() + ";");
+            }
+            out.println();
+
+        }*/
+
+        merged_index = builder.build();
     }
 
 
@@ -278,19 +287,18 @@ public class Indexer {
         }*/
 
 
-
-
-    public void load(URI uri) {
+ /*   public void load(URI uri) {
         try {
             Gson gson = new Gson();
-            merged_index = gson.fromJson(new FileReader(uri.getPath()),new TypeToken<Map<String,Map<Integer, Tuple<Double,List<Integer>>>>>(){}.getType());
-        }catch(IOException e){
+            merged_index = gson.fromJson(new FileReader(uri.getPath()), new TypeToken<Map<String, Map<Integer, Tuple<Double, List<Integer>>>>>() {
+            }.getType());
+        } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public void printMergedIndex(){/*
-        System.out.println("printing merged index");
+   // public void printMergedIndex() {/*
+    /*    System.out.println("printing merged index");
         for (Map.Entry<String, Map<Integer, Tuple<Double,List<Integer>>>> entry : merged_index.entrySet()) {
             System.out.println(entry.getKey() + " : ");
             for (Map.Entry<Integer, Tuple<Double,List<Integer>>> nested_entry : entry.getValue().entrySet()) {
@@ -302,8 +310,8 @@ public class Indexer {
                 System.out.print("]\n");
             }
         }*/
-    }
-
+    //}
+/*
     public boolean contains(String term) {
         return index.containsKey(term);
     }
@@ -333,6 +341,6 @@ public class Indexer {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-    }
+    }*/
 
 }

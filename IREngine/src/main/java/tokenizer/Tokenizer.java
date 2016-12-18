@@ -7,8 +7,10 @@ package tokenizer; /**
  */
 
 import org.tartarus.snowball.ext.englishStemmer;
+
 import com.google.common.collect.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.text.BreakIterator;
 import java.util.*;
@@ -21,7 +23,10 @@ import document.Doc;
  */
 public class Tokenizer {
 
-    StopwordSet stopwordSet;
+    private final MultimapBuilder.ListMultimapBuilder<Object, Object> builder;
+    private StopwordSet stopwordSet;
+    private englishStemmer stema = new englishStemmer();
+
     //private Map<String, Map<Integer, List<Integer>>> tokens; //tokens: token -> docid -> posiçoes
     //private Map<String,List<Integer>> tokens; //token->posições
     //private Multimap<String,Integer> tokens; //token ->posições
@@ -29,17 +34,17 @@ public class Tokenizer {
     /**
      * tokenizer.Tokenizer class constructor.
      */
-    public Tokenizer(URI stopUR) {
+    public Tokenizer(URI stopUR) throws IOException {
         //this.tokens = new HashMap<>();
         //this.tokens = ArrayListMultimap.create();
         this.stopwordSet = new StopwordSet(stopUR);
+        builder = MultimapBuilder.hashKeys().linkedListValues();
     }
 
     /**
      * Applies the stemming operation using the Porter Stemmer.
      */
-    public String stem(String a) {
-        englishStemmer stema = new englishStemmer();
+    private String stem(String a) {
         stema.setCurrent(a);
         stema.stem();
         return stema.getCurrent();
@@ -51,8 +56,8 @@ public class Tokenizer {
      *
      * @param doc document.Doc to tokenize and stem
      */
-    public Multimap<String,Integer> tokenize(Doc doc) {
-        Multimap<String,Integer> tokens = ArrayListMultimap.create(); //token ->posições
+    public Multimap<String, Integer> tokenize(Doc doc) {
+        Multimap<String, Integer> tokens = builder.build(); //token ->posições
 
         //Scanner sc = new Scanner(doc.getDataStream());
         BreakIterator boundary = BreakIterator.getWordInstance();
@@ -64,9 +69,10 @@ public class Tokenizer {
         for (int end = boundary.next();
              end != BreakIterator.DONE;
              start = end, end = boundary.next()) {
-            token = doc.getDataStream().substring(start,end);
-            if(!token.equals(" ")) {
-              //  System.out.println(token);
+            if (end - start > 2) { // filter words by size (also filters spaces)
+                token = doc.getDataStream().substring(start, end);
+
+                //  System.out.println(token);
                 String stemmedStr = stem(token);
                 if (!stopwordSet.contains(token) && !stopwordSet.contains(stemmedStr)) { // to not tokenize the stopwords!!
                     token = stemmedStr;
@@ -106,7 +112,7 @@ public class Tokenizer {
             }
             idx++;
         }*/
-       // sc.close();
+        // sc.close();
     }
 
     /**
