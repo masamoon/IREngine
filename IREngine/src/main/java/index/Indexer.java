@@ -7,9 +7,7 @@ import com.google.common.collect.TreeMultimap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,7 +42,8 @@ public class Indexer {
         serNum = 0;
         index = new TreeMap<>();
         tfidf_index = new TreeMap<>();
-        merged_index = ArrayListMultimap.create();
+        merged_index = TreeMultimap.create();
+
         serializeTo = null;
         memory = new Memory();
         mmem = mem;
@@ -105,6 +104,7 @@ public class Indexer {
             IndexEntry indexEntry = new IndexEntry(docId,tf*norm,new ArrayList<Integer>(pos));
             //entry.put(docId,new Tuple(tf*norm,new ArrayList<Integer>(pos)));
             merged_index.put(term,indexEntry);
+
         }
 
         if (memory.getCurrentMemory() >= (mmem*0.85)) {
@@ -147,12 +147,12 @@ public class Indexer {
 
         }*/
 
-        if (memory.getCurrentMemory() >= (mmem*0.85)) {
+        /*if (memory.getCurrentMemory() >= (mmem*0.85)) {
             System.out.println("utils.Memory usage is high - Saving Index current state before the next tf-idf indexation");
             free();
             System.gc();
             System.out.println("Saved");
-        }
+        }*/
 
        // serialize();
         /*for(Map.Entry<String, Map<Integer,List<Integer>>> entry : index.entrySet()) {
@@ -202,14 +202,15 @@ public class Indexer {
         serNum++;
         serialize();
 
-        merged_index = ArrayListMultimap.create();
+
     }
 
     public void serialize() {
 
-        try{
-            FileWriter fw = new FileWriter("resources/output/"+serNum+".idx");
+        /*try{
+            FileWriter fw = null;
             for( Map.Entry<String,IndexEntry> idxEntry : merged_index.entries()){
+                fw = new FileWriter("resources/output/"+idxEntry.getKey().charAt(0)+".idx");
                 fw.write(idxEntry.getKey()+":"+idxEntry.getValue().toString());
             }
             fw.close();
@@ -218,7 +219,26 @@ public class Indexer {
         }
         catch(NullPointerException e){
             e.printStackTrace();
+        }*/
+
+
+        try {
+            FileWriter fw = new FileWriter("resources/output/"+serNum+".idx", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw);
+            for (Map.Entry<String, Collection<IndexEntry>> idxEntry : merged_index.asMap().entrySet()) {
+                //System.out.println("serializing ");
+
+                out.println(idxEntry.getKey() + ":" + idxEntry.getValue().toString());
+            }
+
+
+        }catch(IOException e){
+            e.printStackTrace();
         }
+        merged_index = TreeMultimap.create();
+    }
+
 
         /*try{
             Gson gson = new Gson();
@@ -249,7 +269,7 @@ public class Indexer {
         }*/
 
 
-    }
+
 
     public void load(URI uri) {
         try {

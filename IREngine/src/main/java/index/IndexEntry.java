@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Andre on 23/11/2016.
  */
-public class IndexEntry {
+public class IndexEntry implements Comparable<Object>{
     //public String term;
     public Integer doc_id;
     public Double weight;
@@ -59,5 +59,10 @@ public class IndexEntry {
 
         return str;
 
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
     }
 }
