@@ -21,7 +21,7 @@ import tokenizer.Tokenizer;
  * MIECT - Information Retrieval
  * 2016/2017
  * Andre Lopes - 67833
- * Raquel Rocha - 62196
+ *
  */
 
 public class CsvDocumentProcessor implements DocumentProcessor {
@@ -44,7 +44,7 @@ public class CsvDocumentProcessor implements DocumentProcessor {
             int rnum = 0;
             for (CSVRecord record : records) {
                 rnum++;
-                System.out.println("record num: "+rnum);
+              //  System.out.println("record num: "+rnum);
                 tokenizer = new Tokenizer(stopURI);
                 clean_line = new StringBuilder();
                 try {

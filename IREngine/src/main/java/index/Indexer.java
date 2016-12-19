@@ -121,6 +121,7 @@ public class Indexer {
             System.out.println("utils.Memory usage is high - Saving Index current state before the next tf-idf indexation");
             free();
             System.gc();
+            System.gc();
             System.out.println("Saved");
         }
 
@@ -254,7 +255,8 @@ public class Indexer {
 
         }*/
 
-        merged_index = builder.build();
+       // merged_index = builder.build();
+        merged_index.clear();
     }
 
 

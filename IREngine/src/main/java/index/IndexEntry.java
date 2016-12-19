@@ -50,6 +50,7 @@ public class IndexEntry implements Comparable<IndexEntry> {
 
     @Override
     public int compareTo(IndexEntry o) {
-        return Integer.compare(this.doc_id, o.doc_id);
+
+        return -Double.compare(o.weight, this.weight);
     }
 }
