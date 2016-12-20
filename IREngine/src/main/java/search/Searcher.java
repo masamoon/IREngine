@@ -95,7 +95,7 @@ public class Searcher {
             e1.printStackTrace();
         }
         System.out.println("Search results for: "+query);
-        long endTime = System.nanoTime();
+
 
 
         BufferedReader meta = null;
@@ -122,6 +122,11 @@ public class Searcher {
                     while ((metaLine = meta.readLine()) != null) {
                         // title = metaLine.substring(0,metaLine.indexOf(":"));
                         String metalineres[] = metaLine.split(":");
+                        String parentIds[] = metaLine.split("-");
+                        String parentId = "";
+                        if(parentIds.length > 1){
+                            parentId = parentIds[1];
+                        }
                         if (metalineres.length > 1)
                             did = metalineres[1];
                         else
@@ -141,6 +146,15 @@ public class Searcher {
                             System.out.println("title: " + title + " | docid: " + intdid+"| weight: "+w);
                             toExclude.add(intdid);
                         }
+                        //System.out.println(parentId);
+                       try {
+                            if (Integer.parseInt(parentId) == weights.get(w)) {
+                                System.out.println("Related Answer #### title: " + title + " | docid: " + weights.get(w) + "| weight: " + w);
+                          //      System.out.println(parentId);
+                            }
+                        }catch(NumberFormatException e){
+
+                        }
 
                     }
 
@@ -157,6 +171,7 @@ public class Searcher {
 
             count++;
         }
+        long endTime = System.nanoTime();
         long duration = (endTime - startTime);
         System.out.println(String.format("Duration: %.4f sec\n", (float) duration / 1000000000));
     }

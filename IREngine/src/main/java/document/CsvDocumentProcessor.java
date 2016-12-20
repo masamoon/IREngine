@@ -86,16 +86,26 @@ public class CsvDocumentProcessor implements DocumentProcessor {
                         }
 
                     }
-                    clean_line.append(builder.toString());
+                    /*String tag = record.get("Tag");
+                    String cleanTag[] = title.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+"); //remove puncuation all lower case
+
+                    for (String s : cleanTag){
+                        builder.append(s+" ");
+                    }
+                    clean_line.append(builder.toString());*/
                     //System.out.println(clean_line.toString());
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
                 Integer docId = Integer.parseInt(record.get("Id"));
+
+                String parent_id = record.get("ParentId");
+
                 if(!title.isEmpty())
-                    bw.append(title+":"+docId+"\n");
+                    bw.append(title+":"+docId+"-"+parent_id+"\n");
                 else
-                    bw.append("untitled:"+docId+"\n");
+                    bw.append("untitled:"+docId+"-"+parent_id+"\n");
+
 
                 Multimap<String,Integer> tokenized = tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
                 idx.index(tokenized,docId);
