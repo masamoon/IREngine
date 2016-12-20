@@ -110,6 +110,7 @@ public class Searcher {
         String did = "";
         int count = 0;
         for(Double w : weights.keySet()){
+            ArrayList<Integer> toExclude = new ArrayList<Integer>();
             try {
                 meta = new BufferedReader(new FileReader("resources/output/metadata.idx"));
             }catch(IOException e){
@@ -137,7 +138,8 @@ public class Searcher {
                         }
                         //System.out.println(intdid +" ## "+weights.get(w));
                         if (intdid == weights.get(w)) {
-                            System.out.println("title: " + title + " docid: " + intdid);
+                            System.out.println("title: " + title + " | docid: " + intdid+"| weight: "+w);
+                            toExclude.add(intdid);
                         }
 
                     }
@@ -146,8 +148,8 @@ public class Searcher {
                     e.printStackTrace();
                 }
 
-
-                System.out.println(weights.get(w) + " : " + w);
+                if(!toExclude.contains(weights.get(w)))
+                    System.out.println(weights.get(w) + " : " + w);
             }
             else{
                 break;
