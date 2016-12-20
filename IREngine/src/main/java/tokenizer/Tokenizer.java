@@ -73,7 +73,10 @@ public class Tokenizer {
                 token = doc.getDataStream().substring(start, end);
 
                 //  System.out.println(token);
+
                 String stemmedStr = stem(token);
+
+
                 if (!stopwordSet.contains(token) && !stopwordSet.contains(stemmedStr)) { // to not tokenize the stopwords!!
                     token = stemmedStr;
                 /*if (!tokens.containsKey(token)) {

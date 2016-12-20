@@ -71,7 +71,7 @@ public class Searcher {
     /*String docId = term.split("=")[0];
     Double weight = Double.parseDouble(docId.split("\\[")[0]);
     weights.put(weight,Integer.parseInt(docId));*/
-                if(term.equals(stemmedQ)) {
+                if(term.contains(stemmedQ)) {
                     // System.out.println(line);
                     String docId = rline.substring(1,rline.indexOf("="));
 
@@ -110,6 +110,12 @@ public class Searcher {
         String did = "";
         int count = 0;
         for(Double w : weights.keySet()){
+            try {
+                meta = new BufferedReader(new FileReader("resources/output/metadata.idx"));
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+
             if(count < 10) {
                 try {
                     while ((metaLine = meta.readLine()) != null) {
@@ -129,9 +135,11 @@ public class Searcher {
                         } catch (NumberFormatException e) {
                             intdid = 0;
                         }
+                        //System.out.println(intdid +" ## "+weights.get(w));
                         if (intdid == weights.get(w)) {
                             System.out.println("title: " + title + " docid: " + intdid);
                         }
+
                     }
 
                 } catch (IOException e) {

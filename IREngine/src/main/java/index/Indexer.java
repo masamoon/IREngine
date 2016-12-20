@@ -135,11 +135,11 @@ public class Indexer {
         }
 
         if (Memory.getCurrentMemory() >= (mmem * 0.85)) {
-            System.out.println("utils.Memory usage is high - Saving Index current state before the next tf-idf indexation");
+           // System.out.println("utils.Memory usage is high - Saving Index current state before the next tf-idf indexation");
             free();
             System.gc();
             System.gc();
-            System.out.println("Saved");
+           // System.out.println("Saved");
         }
 
         /*for (Map.Entry<String, List<Integer>> entry : tokens.entrySet()) {

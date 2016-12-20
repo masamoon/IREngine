@@ -52,7 +52,7 @@ public class CsvDocumentProcessor implements DocumentProcessor {
             int rnum = 0;
             for (CSVRecord record : records) {
                 rnum++;
-                System.out.println("record num: "+rnum);
+              //  System.out.println("record num: "+rnum);
                 tokenizer = new Tokenizer(stopURI);
                 clean_line = new StringBuilder();
                 String title = "";
@@ -67,6 +67,7 @@ public class CsvDocumentProcessor implements DocumentProcessor {
                         for (String s : words) {
                             if(s.length()>3) {
                                 builder.append(" ").append(s.trim());
+
                             }
                         }
                         clean_line.append(builder.toString());
