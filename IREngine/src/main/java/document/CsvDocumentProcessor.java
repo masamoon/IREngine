@@ -10,11 +10,16 @@ import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.stream.IntStream;
 
 import index.Indexer;
 import tokenizer.Tokenizer;
+
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 /**
  * Aveiro University, Department of Electronics, Telecommunications and Informatics.
@@ -26,6 +31,7 @@ import tokenizer.Tokenizer;
 
 public class CsvDocumentProcessor implements DocumentProcessor {
     private final Path path;
+    private static final Path destination = Paths.get("resources", "output");
 
     public CsvDocumentProcessor(Path p) throws IOException {
         if (!Files.isRegularFile(p) || !Files.exists(p)) throw new FileNotFoundException();
@@ -33,9 +39,11 @@ public class CsvDocumentProcessor implements DocumentProcessor {
     }
 
     public static void process(File file, int mem, URI stopURI) {
+
         Tokenizer tokenizer;
         Indexer idx;
         try {
+            BufferedWriter bw = Files.newBufferedWriter(destination.resolve("metadata.idx"), CREATE, APPEND, WRITE);
             Reader in = new FileReader(file);
 
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader().withSkipHeaderRecord().parse(in);
@@ -47,8 +55,10 @@ public class CsvDocumentProcessor implements DocumentProcessor {
                 System.out.println("record num: "+rnum);
                 tokenizer = new Tokenizer(stopURI);
                 clean_line = new StringBuilder();
+                String title = "";
                 try {
-                    String title = record.get("Title");
+                    title = record.get("Title");
+
                     String[] words;
                     if (title.length() > 0) {
                         words = title.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+"); //remove puncuation all lower case
@@ -81,6 +91,10 @@ public class CsvDocumentProcessor implements DocumentProcessor {
                     e.printStackTrace();
                 }
                 Integer docId = Integer.parseInt(record.get("Id"));
+                if(!title.isEmpty())
+                    bw.append(title+":"+docId+"\n");
+                else
+                    bw.append("untitled:"+docId+"\n");
 
                 Multimap<String,Integer> tokenized = tokenizer.tokenize(new Doc(Integer.parseInt(record.get("Id")), clean_line.toString(), file.toURI()));
                 idx.index(tokenized,docId);

@@ -27,7 +27,7 @@ public class MainEngine {
 
         long startTime = System.nanoTime();
 
-        URI corpusUri = basepath.resolve("corpusBig").resolve("Answers.csv").toUri(); //URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/Answers.csv");
+        URI corpusUri = basepath.resolve("corpusBig").resolve("Questions.csv").toUri(); //URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/Answers.csv");
         //URI corpusUri = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/csv/Answers_mini.csv");
         URI stop = basepath.resolve("stopwords_english.txt").toUri();
         URI serTo = basepath.resolve("output").toUri(); // URI.create(System.getProperty("user.dir").replace("\\", "/") + "resources/output");

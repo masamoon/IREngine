@@ -52,12 +52,9 @@ public class Searcher {
     public void search(String query) {
         long startTime = System.nanoTime();
 
-        TreeMultimap<Integer,Double> weights = TreeMultimap.create();
-
+        //TreeMultimap<Integer,Double> weights = TreeMultimap.create();
+        TreeMap<Double,Integer> weights = new TreeMap<>(Collections.reverseOrder());
         String stemmedQ = stem(query);
-
-
-
 
         String line = null;
         //System.out.println(i*100/(numfiles)+"% completed");
@@ -87,30 +84,71 @@ public class Searcher {
                         String wR = tmp.substring(0,tmp.indexOf("["));
                         Double weight = Double.parseDouble(wR);
                         //System.out.println(weight);
-                        weights.put(Integer.parseInt(docId),weight);
+                        //weights.put(Integer.parseInt(docId),weight);
+                        weights.put(weight,Integer.parseInt(docId));
 
                     }
-
-
-
                 }
 
             }
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-
-
-
-
         System.out.println("Search results for: "+query);
         long endTime = System.nanoTime();
+
+
+        BufferedReader meta = null;
+        try {
+            meta = new BufferedReader(new FileReader("resources/output/metadata.idx"));
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+
+        String metaLine = "";
+        String title = "";
+        String did = "";
+        int count = 0;
+        for(Double w : weights.keySet()){
+            if(count < 10) {
+                try {
+                    while ((metaLine = meta.readLine()) != null) {
+                        // title = metaLine.substring(0,metaLine.indexOf(":"));
+                        String metalineres[] = metaLine.split(":");
+                        if (metalineres.length > 1)
+                            did = metalineres[1];
+                        else
+                            did = "0";
+                        title = metalineres[0];
+                        // did = metaLine.substring(metaLine.indexOf(":"),metaLine.length()-1);
+
+                        //System.out.println(did);
+                        int intdid = 0;
+                        try {
+                            intdid = Integer.parseInt(did);
+                        } catch (NumberFormatException e) {
+                            intdid = 0;
+                        }
+                        if (intdid == weights.get(w)) {
+                            System.out.println("title: " + title + " docid: " + intdid);
+                        }
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                System.out.println(weights.get(w) + " : " + w);
+            }
+            else{
+                break;
+            }
+
+            count++;
+        }
         long duration = (endTime - startTime);
         System.out.println(String.format("Duration: %.4f sec\n", (float) duration / 1000000000));
-        for(Integer docid : weights.keySet()){
-            System.out.println(docid+" : "+weights.get(docid));
-
-        }
     }
 
     /**
