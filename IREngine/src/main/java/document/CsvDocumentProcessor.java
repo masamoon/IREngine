@@ -44,7 +44,7 @@ public class CsvDocumentProcessor implements DocumentProcessor {
             int rnum = 0;
             for (CSVRecord record : records) {
                 rnum++;
-              //  System.out.println("record num: "+rnum);
+                System.out.println("record num: "+rnum);
                 tokenizer = new Tokenizer(stopURI);
                 clean_line = new StringBuilder();
                 try {

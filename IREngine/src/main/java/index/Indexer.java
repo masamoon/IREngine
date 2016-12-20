@@ -6,10 +6,7 @@ import com.google.common.collect.MultimapBuilder.ListMultimapBuilder;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,6 +36,10 @@ public class Indexer {
     private final int mmem; //maxMemory
     private int serNum;
 
+    BufferedWriter[] bufferedWriters;
+
+    char[] alphabet;
+
 
     // private Map<String,Map<Integer,Integer>> tf_index;
 
@@ -58,6 +59,22 @@ public class Indexer {
 
         serializeTo = null;
         mmem = mem;
+
+        alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+        /*alphabet = new char[26];
+        for (char c = 'a'; c <= 'z'; c++) {
+            alphabet[c - 'a'] = c;
+        }*/
+
+        bufferedWriters = new BufferedWriter[alphabet.length];
+
+        for(int i =0; i<alphabet.length;i++){
+            try {
+                bufferedWriters[i] = Files.newBufferedWriter(destination.resolve(alphabet[i] + ".idx"), CREATE, APPEND, WRITE);
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -230,19 +247,43 @@ public class Indexer {
         }*/
 
         serNum++;
-        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(destination.resolve(serNum + ".idx"), CREATE, APPEND, WRITE)) {
+
+
+       // try (BufferedWriter bufferedWriter = Files.newBufferedWriter(destination.resolve(serNum + ".idx"), CREATE, APPEND, WRITE)) {
             for (String term : merged_index.keySet()) {
+
+                int i = 0;
+
                 // System.out.println("serializing "+term);
-                bufferedWriter.append(term).append(':');
-                //out.print(term + ":");
-                for (IndexEntry idx : merged_index.get(term)) {
-                    bufferedWriter.append(idx.toString()).append(';');
+                for(int j= 0; i<alphabet.length; j++){
+
+                    if(term.charAt(0) == alphabet[j]){
+                        i = j;
+                        break;
+                    }
+                    //System.out.println(alphabet[j]+" "+alphabet.length);
                 }
-                bufferedWriter.append('\n');
+
+                try {
+                    //System.out.println("kek");
+                    bufferedWriters[i].append(term).append(':');
+                    //out.print(term + ":");
+
+                    for (IndexEntry idx : merged_index.get(term)) {
+                        bufferedWriters[i].append(idx.toString()).append(';');
+                        //System.out.println("kek"+term );
+                    }
+                    bufferedWriters[i].append('\n');
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
             }
-        } catch (IOException e) {
+       /* } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+
         //PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("resources/output/" + serNum + ".idx", true)));
 
        /* for (String term : merged_index.keySet()) {
