@@ -7,6 +7,7 @@ package search; /**
  */
 
 import asg.cliche.Command;
+import asg.cliche.Param;
 import asg.cliche.ShellFactory;
 import asg.cliche.example.HelloWorld;
 import com.google.common.collect.Multimap;
@@ -63,13 +64,14 @@ public class Searcher {
     }
 
 
-    @Command
+    @Command(description = "Search query operation")
     /**
      * Search query operation.
      * @param query word to be searched
      * @param topr show top N results
      */
-    public void search(String query,int topr) {
+    public void search(@Param(name = "query",description = "word to be searched")String query,
+                       @Param(name = "topr",description = "show top N results")int topr) {
         long startTime = System.nanoTime();
 
         //TreeMultimap<Integer,Double> weights = TreeMultimap.create();
@@ -161,13 +163,14 @@ public class Searcher {
     }
 
 
-    @Command
+    @Command(description = "Performs a ranked search with more than one term on the query")
     /**
      * Performs a ranked search with more than one term on the query
      * @param query searching query (might contain more than one word)
      * @param topr show top N results
      */
-    public void csearch(String query,int topr) {
+    public void msearch( @Param(name="query",description ="searching query (might contain more than one word)") String query,
+                         @Param(name="topr",description ="show top N results") int topr) {
 
 
         Path basepath = Paths.get("");
@@ -230,9 +233,6 @@ public class Searcher {
         double norm = 1 / Math.sqrt(sumw);
 
 
-
-
-
         TreeMultimap<String, IndexEntry> query_index = TreeMultimap.create();
         TreeSet<SearchEntry> ranked_results = new TreeSet<>();
         TreeMap<Integer, Double> results = new TreeMap<>();
@@ -253,17 +253,17 @@ public class Searcher {
 
             for (SearchEntry en : weights) {
 
-                //ranked_results.add(new SearchEntry(en.getDocId(), en.getWeight() * tfidf));
-
                 if (results.containsKey(en.getDocId())) {
                     double oldW = results.get(en.getDocId());
                     double newW = (en.getWeight() * tfidf) + oldW;
                     results.put(en.getDocId(), newW);
-                    for(Object rankedr : ranked_results.toArray()){
+
+                    for(Object rankedr : ranked_results.toArray()){ //remove duplicates
                         SearchEntry srank = (SearchEntry) rankedr;
                         if(srank.getDocId() == en.getDocId())
                             ranked_results.remove(rankedr);
                     }
+
                     ranked_results.add(new SearchEntry(en.getDocId(), newW));
                 } else {
                     results.put(en.getDocId(), en.getWeight() * tfidf);
@@ -408,17 +408,17 @@ public class Searcher {
         return metadata;
     }
 
-    @Command
-    public void setIndex(String s){
+    @Command(description = "sets a custom path to where the index is stored")
+    public void setIndex(@Param(name ="path",description = "custom path to where the index is stored")String s){
         pathToIndex = s;
     }
 
-    @Command
-    public void setPathToSW(String s){
+    @Command(description = "sets a custom path to where the stopword list is stored")
+    public void setPathToSW(@Param(name ="path",description = "custom path to where the stopword list is stored")String s){
         pathToSW = s;
     }
 
-    @Command
+    @Command(description = "quits the program")
     public void quit(){
         System.out.println("[x]exiting...");
         System.exit(0);
