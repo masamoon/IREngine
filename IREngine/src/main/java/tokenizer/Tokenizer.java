@@ -99,23 +99,7 @@ public class Tokenizer {
         }
 
         return tokens;
-        //k
-        /*
-        while (sc.hasNext()) {
-            token = sc.next();
-            if (!stopwordSet.contains(token) && !stopwordSet.contains(stem(token))) { // to not tokenize the stopwords!!
-                token = stem(token);
-                if (!tokens.containsKey(token))
-                    tokens.put(token, new HashMap<>());
 
-                if (!tokens.get(token).containsKey(doc.getId()))
-                    tokens.get(token).put(doc.getId(), new ArrayList<>());
-
-                tokens.get(token).get(doc.getId()).add(idx);
-            }
-            idx++;
-        }*/
-        // sc.close();
     }
 
     /**

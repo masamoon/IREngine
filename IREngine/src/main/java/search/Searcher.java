@@ -121,7 +121,7 @@ public class Searcher {
     /*String docId = term.split("=")[0];
     Double weight = Double.parseDouble(docId.split("\\[")[0]);
     weights.put(weight,Integer.parseInt(docId));*/
-                if (term.contains(stemmedQ)) {
+                if (term.equals(stemmedQ)) {
                     String rline = line.substring(idx);
                     // System.out.println(line);
                     //String docId = rline.substring(1,rline.indexOf("="));
@@ -337,19 +337,17 @@ public class Searcher {
             SearchEntry sentry = (SearchEntry) entry;
             int w = sentry.getDocId();
             ArrayList<Integer> toExclude = new ArrayList<Integer>();
-            try {
-                meta = new BufferedReader(new FileReader(pathToIndex+"metadata.idx"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
             if (count < topr) {
+
 
                 if(metadata.containsKey(w)){
                     title = metadata.get(w);
                     System.out.println("title: " + title + " | docid: " + w + "| weight: " + sentry.getWeight());
                     toExclude.add(w);
+
                 }
+
 
                 if (!toExclude.contains(w))
                     System.out.println("docid: " + w + " : weight->" + sentry.getWeight());
@@ -363,8 +361,10 @@ public class Searcher {
 
     public HashMap<Integer,String> loadMetadata(){
         BufferedReader meta = null;
+        BufferedReader meta2 = null;
         String metaLine = "";
         HashMap<Integer,String> metadata = new HashMap<>();
+        HashMap<Integer,Integer> parents = new HashMap<>();
         try {
             meta = new BufferedReader(new FileReader(pathToIndex+"metadata.idx"));
         } catch (FileNotFoundException e1) {
@@ -378,14 +378,24 @@ public class Searcher {
                 String metalineres[] = metaLine.split(":");
                 String parentIds[] = metaLine.split("-");
                 String parentId = "";
+
+
                 if (parentIds.length > 1) {
                     parentId = parentIds[1];
                 }
-                if (metalineres.length > 1)
-                    did = metalineres[1];
+                if (metalineres.length > 1) {
+                    String[] tmp = parentIds[0].split(":");
+                    if(tmp.length > 1){
+                        did = tmp[1];
+                    }
+                    else
+                        did = "0";
+                }
                 else
                     did = "0";
                 title = metalineres[0];
+                //System.out.println(did);
+
                 // did = metaLine.substring(metaLine.indexOf(":"),metaLine.length()-1);
 
                 //System.out.println(did);
@@ -395,14 +405,43 @@ public class Searcher {
                 } catch (NumberFormatException e) {
                     intdid = 0;
                 }
+                //System.out.println(intdid+" "+title);
                 //System.out.println(intdid +" ## "+weights.get(w));
+                /*try {
+                    meta2 = new BufferedReader(new FileReader(pathToIndex+"metadata.idx"));
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                }*/
+
+                int intpid = 0;
+
+                try {
+                    intpid = Integer.parseInt(parentId);
+                } catch (NumberFormatException e) {
+                    //System.out.println(metaLine);
+                    intpid = 0;
+                }
+
+                /*if(metadata.containsKey(intpid)){
+                    metadata.put(intdid,"##related question## "+metadata.get(intdid));
+                   // System.out.println(intpid);
+                }
+                else*/
+                parents.put(intdid,intpid);
+               // System.out.println(intdid+" "+title);
                 metadata.put(intdid,title);
+
 
 
 
             }
         }catch(IOException e){
             e.printStackTrace();
+        }
+        for(Integer id: parents.keySet()){
+            if(parents.get(id)>0) {
+                metadata.put(id, "##related question##" + metadata.get(parents.get(id)));
+            }
         }
         System.out.println("[x] loaded metadata");
         return metadata;

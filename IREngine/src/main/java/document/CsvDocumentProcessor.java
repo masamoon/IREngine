@@ -86,20 +86,33 @@ public class CsvDocumentProcessor implements DocumentProcessor {
                         }
 
                     }
-                    /*String tag = record.get("Tag");
-                    String cleanTag[] = title.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+"); //remove puncuation all lower case
 
-                    for (String s : cleanTag){
-                        builder.append(s+" ");
-                    }
-                    clean_line.append(builder.toString());*/
                     //System.out.println(clean_line.toString());
                 } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
+
+                try {
+                    String tag = record.get("Tag");
+                    StringBuilder builder = new StringBuilder();
+                    String cleanTag[] = tag.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+"); //remove puncuation all lower case
+
+                    for (String s : cleanTag) {
+                        builder.append(s + " ");
+                    }
+                    clean_line.append(builder.toString());
+                }catch(IllegalArgumentException e){
+
+                }
+
                 Integer docId = Integer.parseInt(record.get("Id"));
 
-                String parent_id = record.get("ParentId");
+                String parent_id = "null";
+                try {
+                    parent_id = record.get("ParentId");
+                }catch(IllegalArgumentException e){
+
+                }
 
                 if(!title.isEmpty())
                     bw.append(title+":"+docId+"-"+parent_id+"\n");
