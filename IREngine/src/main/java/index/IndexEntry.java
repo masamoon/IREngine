@@ -15,7 +15,7 @@ public class IndexEntry implements Comparable<IndexEntry> {
     private Collection<Integer> positions;
 
 
-    IndexEntry(Integer doc_id, Double weight, Collection<Integer> positions) {
+    public IndexEntry(Integer doc_id, Double weight, Collection<Integer> positions) {
 
         this.doc_id = doc_id;
         this.weight = weight;

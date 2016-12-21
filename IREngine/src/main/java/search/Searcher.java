@@ -10,14 +10,20 @@ import asg.cliche.Command;
 import asg.cliche.ShellFactory;
 import asg.cliche.example.HelloWorld;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.TreeMultimap;
+
+import index.IndexEntry;
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.englishStemmer;
+import tokenizer.StopwordSet;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.BreakIterator;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -25,8 +31,9 @@ import java.util.stream.Stream;
  * search.Searcher data type, which is reponsible for querying the index.
  */
 public class Searcher {
-    long i=0;
+    long i = 0;
     long numfiles;
+
     /**
      * search.Searcher class constructor.
      */
@@ -34,59 +41,104 @@ public class Searcher {
 
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Searcher searcher = new Searcher();
         //searcher.query("software");
         try {
             ShellFactory.createConsoleShell("IREngine", "", new Searcher())
                     .commandLoop(); // and three.
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+
+    @Command
     /**
      * Search query operation.
+     * @param query word to be searched
+     * @param topr show top N results
      */
-    @Command
-    public void search(String query) {
+    public void search(String query,int topr) {
         long startTime = System.nanoTime();
 
         //TreeMultimap<Integer,Double> weights = TreeMultimap.create();
-        TreeMap<Double,Integer> weights = new TreeMap<>(Collections.reverseOrder());
+        //Map<Integer, Double> weights = new HashMap<>();
+
+
+        Set<SearchEntry> weights = searchTerm(query);
+
+        System.out.println("Search results for: " + query);
+
+
+        matchTitles(weights,topr);
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        System.out.println(String.format("Duration: %.4f sec\n", (float) duration / 1000000000));
+    }
+
+    /**
+     * Applies the stemming operation using the Porter Stemmer.
+     */
+    public String stem(String a) {
+        englishStemmer stema = new englishStemmer();
+        stema.setCurrent(a);
+        stema.stem();
+        return stema.getCurrent();
+    }
+
+    public Set<SearchEntry> searchTerm(String query) {
+
+        Set<SearchEntry> weights = new TreeSet<>();
         String stemmedQ = stem(query);
+
 
         String line = null;
         //System.out.println(i*100/(numfiles)+"% completed");
         BufferedReader in = null;
         try {
-            in = new BufferedReader(new FileReader("resources/output/"+query.charAt(0)+".idx"));
+            in = new BufferedReader(new FileReader("resources/output/" + query.charAt(0) + ".idx"));
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
         try {
-            while((line = in.readLine()) != null){
-                String term = line.substring(0,line.indexOf(":"));
-                String rline = line.substring(line.indexOf(":"),line.length()-1);
+            while ((line = in.readLine()) != null) {
+                int idx = line.indexOf(":");
+                String term = line.substring(0, idx);
+
     /*String docId = term.split("=")[0];
     Double weight = Double.parseDouble(docId.split("\\[")[0]);
     weights.put(weight,Integer.parseInt(docId));*/
-                if(term.contains(stemmedQ)) {
+                if (term.contains(stemmedQ)) {
+                    String rline = line.substring(idx);
                     // System.out.println(line);
-                    String docId = rline.substring(1,rline.indexOf("="));
+                    //String docId = rline.substring(1,rline.indexOf("="));
 
                     //System.out.print(docId[1]);
                     String[] allOccur = rline.split(";");
-                    for(String str: allOccur){
-                        String wL = str.substring(0,str.indexOf("="));
-                        String tmp= str.substring(str.indexOf("=")+1,str.length());
-                       // System.out.println(tmp);
-                        String wR = tmp.substring(0,tmp.indexOf("["));
-                        Double weight = Double.parseDouble(wR);
+                    int df = allOccur.length - 1;
+                    double idf; /// calculate
+                    // map < term , idf * tfQ>
+
+                    // query(tf)*idf
+                    for (String str : allOccur) {
+                        if (str.isEmpty()) continue;
+                        int idxEq = str.indexOf('=');
+                        int idxSq = str.indexOf('[');
+                        String docId = str.substring(1, idxEq);
+                        String wL = str.substring(idxEq + 1, idxSq);
+
+                        int doc_id = Integer.parseInt(docId);
+                        double wl = Double.parseDouble(wL);
+                        SearchEntry searchEntry = new SearchEntry(doc_id, wl);
+                        weights.add(searchEntry);
+                        // weights.merge(doc_id,wl,(o,n) -> (o==null? 0.0: o) + n);
+                        //String tmp= str.substring(str.indexOf("=")+1,str.indexOf('['));
+                        // System.out.println(tmp);
+                        //String wR = tmp.substring(0,tmp.indexOf("["));
+                        //Double weight = Double.parseDouble(wR);
                         //System.out.println(weight);
                         //weights.put(Integer.parseInt(docId),weight);
-                        weights.put(weight,Integer.parseInt(docId));
-
                     }
                 }
 
@@ -94,10 +146,169 @@ public class Searcher {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        System.out.println("Search results for: "+query);
+
+        return weights;
+    }
+
+
+    @Command
+    /**
+     * Performs a ranked search with more than one term on the query
+     * @param query searching query (might contain more than one word)
+     * @param topr show top N results
+     */
+    public void csearch(String query,int topr) {
+
+
+        Path basepath = Paths.get("resources");
+        URI stop = basepath.resolve("stopwords_english.txt").toUri();
+        String[] clean_query = query.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
+        StringBuilder sbuilder = new StringBuilder();
+
+        long startTime = System.nanoTime();
+
+        for (String s : clean_query) {
+            sbuilder.append(s + " ");
+        }
+
+        query = sbuilder.toString();
+
+        StopwordSet stopwordSet = null;
+        try {
+            stopwordSet = new StopwordSet(stop);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        final MultimapBuilder.ListMultimapBuilder<Object, Object> builder = MultimapBuilder.hashKeys().linkedListValues();
+
+        Multimap<String, Integer> tokens = builder.build(); //token ->posições
+
+
+        BreakIterator boundary = BreakIterator.getWordInstance();
+        boundary.setText(query);
+        String token;
+        int idx = 1;
+        int start = boundary.first();
+
+        for (int end = boundary.next();
+             end != BreakIterator.DONE;
+             start = end, end = boundary.next()) {
+            if (end - start > 2) { // filter words by size (also filters spaces)
+                token = query.substring(start, end);
+
+                String stemmedStr = stem(token);
+
+                if (!stopwordSet.contains(token) && !stopwordSet.contains(stemmedStr)) { // to not tokenize the stopwords!!
+                    token = stemmedStr;
+                    tokens.put(token, idx);
+
+                }
+            }
+            idx++;
+        }
+
+        double sumw = 0;
+        for (String term : tokens.keySet()) {
+            // merged_index.put(term,new HashMap<>());
+            //Map<Integer,Tuple<Double,List<Integer>>> entry = merged_index.get(term);
+            Collection<Integer> pos = tokens.get(term);
+            int t_frequency = pos.size();
+            double tf = 1 + Math.log10(t_frequency); // term frequency
+            sumw += tf * tf;
+        }
+
+        double norm = 1 / Math.sqrt(sumw);
+
+
+        int N = countLines("resources/output/metadata.idx");
+
+
+        TreeMultimap<String, IndexEntry> query_index = TreeMultimap.create();
+        TreeSet<SearchEntry> ranked_results = new TreeSet<>();
+        TreeMap<Integer, Double> results = new TreeMap<>();
+
+        for (String entry : tokens.keySet()) {
+           // System.out.println(entry);
+            Set<SearchEntry> weights = searchTerm(entry);
+            int df = weights.size();
+            if(df == 0)
+                df = 1;
+            double idf = Math.log10(N / df);
+
+            Collection<Integer> pos = tokens.get(entry);
+            int t_frequency = pos.size();
+            double tf = 1 + Math.log10(t_frequency); // term frequency
+
+            double tfidf = tf * idf * norm;
+
+            for (SearchEntry en : weights) {
+
+                //ranked_results.add(new SearchEntry(en.getDocId(), en.getWeight() * tfidf));
+
+                if (results.containsKey(en.getDocId())) {
+                    double oldW = results.get(en.getDocId());
+                    double newW = (en.getWeight() * tfidf) + oldW;
+                    results.put(en.getDocId(), newW);
+                    for(Object rankedr : ranked_results.toArray()){
+                        SearchEntry srank = (SearchEntry) rankedr;
+                        if(srank.getDocId() == en.getDocId())
+                            ranked_results.remove(rankedr);
+                    }
+                    ranked_results.add(new SearchEntry(en.getDocId(), newW));
+                } else {
+                    results.put(en.getDocId(), en.getWeight() * tfidf);
+                    ranked_results.add(new SearchEntry(en.getDocId(), en.getWeight() * tfidf));
+                }
+            }
+
+        }
+
+        int c = 0;
+
+        matchTitles(ranked_results,topr);
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        System.out.println(String.format("Duration: %.4f sec\n", (float) duration / 1000000000));
 
 
 
+
+    }
+
+    public int countLines(String filename) {
+        InputStream is = null;
+        int count = 0;
+        boolean empty = true;
+        try {
+            is = new BufferedInputStream(new FileInputStream(filename));
+
+            try {
+                byte[] c = new byte[1024];
+
+                int readChars = 0;
+                empty = true;
+                while ((readChars = is.read(c)) != -1) {
+                    empty = false;
+                    for (int i = 0; i < readChars; ++i) {
+                        if (c[i] == '\n') {
+                            ++count;
+                        }
+                    }
+                }
+
+            } finally {
+                is.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return (count == 0 && !empty) ? 1 : count;
+
+    }
+
+    public void matchTitles(Set<SearchEntry> weights,int topr) {
         BufferedReader meta = null;
         try {
             meta = new BufferedReader(new FileReader("resources/output/metadata.idx"));
@@ -109,22 +320,25 @@ public class Searcher {
         String title = "";
         String did = "";
         int count = 0;
-        for(Double w : weights.keySet()){
+        for (Object entry : weights.toArray()) {
+            SearchEntry sentry = (SearchEntry) entry;
+            int w = sentry.getDocId();
             ArrayList<Integer> toExclude = new ArrayList<Integer>();
             try {
                 meta = new BufferedReader(new FileReader("resources/output/metadata.idx"));
-            }catch(IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            if(count < 10) {
+            if (count < topr) {
                 try {
+
                     while ((metaLine = meta.readLine()) != null) {
                         // title = metaLine.substring(0,metaLine.indexOf(":"));
                         String metalineres[] = metaLine.split(":");
                         String parentIds[] = metaLine.split("-");
                         String parentId = "";
-                        if(parentIds.length > 1){
+                        if (parentIds.length > 1) {
                             parentId = parentIds[1];
                         }
                         if (metalineres.length > 1)
@@ -142,19 +356,20 @@ public class Searcher {
                             intdid = 0;
                         }
                         //System.out.println(intdid +" ## "+weights.get(w));
-                        if (intdid == weights.get(w)) {
-                            System.out.println("title: " + title + " | docid: " + intdid+"| weight: "+w);
+                        if (w == intdid) {
+                            System.out.println("title: " + title + " | docid: " + intdid + "| weight: " + sentry.getWeight());
                             toExclude.add(intdid);
+                            break;
                         }
                         //System.out.println(parentId);
-                       try {
-                            if (Integer.parseInt(parentId) == weights.get(w)) {
-                                System.out.println("Related Answer #### title: " + title + " | docid: " + weights.get(w) + "| weight: " + w);
+                       /*try {
+                            if (Integer.parseInt(parentId) == w) {
+                                System.out.println("Related Answer #### title: " + title + " | docid: " + did + "| weight: " + sentry.getWeight());
                           //      System.out.println(parentId);
                             }
                         }catch(NumberFormatException e){
 
-                        }
+                        }*/
 
                     }
 
@@ -162,28 +377,13 @@ public class Searcher {
                     e.printStackTrace();
                 }
 
-                if(!toExclude.contains(weights.get(w)))
-                    System.out.println(weights.get(w) + " : " + w);
-            }
-            else{
+                if (!toExclude.contains(w))
+                    System.out.println("docid: " + w + " : weight->" + sentry.getWeight());
+                count++;
+            } else {
                 break;
             }
-
-            count++;
         }
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
-        System.out.println(String.format("Duration: %.4f sec\n", (float) duration / 1000000000));
-    }
 
-    /**
-     * Applies the stemming operation using the Porter Stemmer.
-     */
-    public String stem(String a) {
-        englishStemmer stema = new englishStemmer();
-        stema.setCurrent(a);
-        stema.stem();
-        return stema.getCurrent();
     }
-
 }

@@ -113,6 +113,7 @@ public class CsvDocumentProcessor implements DocumentProcessor {
                 //idx.serialize();
 
             }
+
             //idx.merge();
             //idx.printMergedIndex();
 

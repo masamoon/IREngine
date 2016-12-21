@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import index.Indexer;
+import org.apache.commons.cli.*;
 import reader.CorpusReader;
 
 /**
@@ -23,20 +24,64 @@ public class MainEngine {
      */
     public static void main(String[] args) {
 
-        Path basepath = Paths.get("resources");
+        Options options = new Options();
+        options.addOption("c", "corpus",true, "Path that contain the Corpus");
+        options.addOption("i","index",true, "where to save the generated index");
+        options.addOption("m","utils.Memory",true,"Define maximum memory to use");
+        options.addOption("s","stopword list",true,"Define a path to the stopword list");
+
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse( options, args);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String pathToCorpus = null;
+        String stopwordsList = null;
+        String pathToIndex = null;
+        String memory = null;
+
+        if(cmd.hasOption("c")) {
+            pathToCorpus = cmd.getOptionValue("c");
+        }
+        else {
+            System.out.println("<ERROR> must define a path to the corpus");
+        }
+
+        if(cmd.hasOption("s")){
+            stopwordsList = cmd.getOptionValue("s");
+        }
+        else{
+            System.out.println("<ERROR> must define a path to the stopword list");
+        }
+        if(cmd.hasOption("i")){
+            pathToIndex = cmd.getOptionValue("i");
+        }
+        else{
+            System.out.println("<ERROR> must define a path to store the index");
+        }
+        if(cmd.hasOption("m")){
+            memory = cmd.getOptionValue("m");
+        }else{
+            System.out.println("<ERROR> must define max memory used in the indexing");
+        }
+
+        Path basepath = Paths.get("");
 
         long startTime = System.nanoTime();
 
-        URI corpusUri = basepath.resolve("corpusBig").resolve("Answers.csv").toUri(); //URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/Answers.csv");
+        URI corpusUri = basepath.resolve(pathToCorpus).toUri(); //URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/corpusBig/Answers.csv");
         //URI corpusUri = URI.create(System.getProperty("user.dir").replace("\\", "/") + "/resources/csv/Answers_mini.csv");
-        URI stop = basepath.resolve("stopwords_english.txt").toUri();
-        URI serTo = basepath.resolve("output").toUri(); // URI.create(System.getProperty("user.dir").replace("\\", "/") + "resources/output");
+        URI stop = basepath.resolve(stopwordsList).toUri();
+        URI serTo = basepath.resolve(pathToIndex).toUri(); // URI.create(System.getProperty("user.dir").replace("\\", "/") + "resources/output");
 
         CorpusReader crd = new CorpusReader(corpusUri, stop);
 
-        Indexer idx = new Indexer(512); // REALLY ??? make this dynamic by giving or taking memory from the VM
+        Indexer idx = new Indexer(Integer.parseInt(memory));
         idx.setSerializeTo(serTo); // TODO: move to constructor
-        crd.getProcessedDocuments(512);
+        crd.getProcessedDocuments(Integer.parseInt(memory));
 
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);

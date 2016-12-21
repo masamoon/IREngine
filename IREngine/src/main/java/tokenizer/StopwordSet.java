@@ -28,7 +28,7 @@ public class StopwordSet {
      * Retrieves the file that contains the stopword list
      * and adds it to structure without repetitions (Set).
      */
-    StopwordSet(URI uri) throws IOException {
+    public StopwordSet(URI uri) throws IOException {
         stopwords = new HashSet<>(Files.readAllLines(Paths.get(uri)));
     }
 
