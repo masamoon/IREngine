@@ -33,16 +33,26 @@ import java.util.stream.Stream;
 public class Searcher {
     long i = 0;
     long numfiles;
+    String pathToIndex;
+    String pathToSW;
+    HashMap<Integer,String> metadata;
+    int N;
 
     /**
      * search.Searcher class constructor.
      */
     public Searcher() {
-
+        System.out.println("[x] Starting up...");
+        pathToIndex = "resources/output/";
+        pathToSW = "resources/stopwords_english.txt";
+        System.out.println("[x] Loading metadata...");
+        metadata = loadMetadata();
+        System.out.println("[x] Performing additional operations...");
+        N = countLines(pathToIndex+"metadata.idx");
     }
 
     public static void main(String[] args) {
-        Searcher searcher = new Searcher();
+        //Searcher searcher = new Searcher();
         //searcher.query("software");
         try {
             ShellFactory.createConsoleShell("IREngine", "", new Searcher())
@@ -97,7 +107,7 @@ public class Searcher {
         //System.out.println(i*100/(numfiles)+"% completed");
         BufferedReader in = null;
         try {
-            in = new BufferedReader(new FileReader("resources/output/" + query.charAt(0) + ".idx"));
+            in = new BufferedReader(new FileReader(pathToIndex + query.charAt(0) + ".idx"));
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
@@ -160,8 +170,8 @@ public class Searcher {
     public void csearch(String query,int topr) {
 
 
-        Path basepath = Paths.get("resources");
-        URI stop = basepath.resolve("stopwords_english.txt").toUri();
+        Path basepath = Paths.get("");
+        URI stop = basepath.resolve(pathToSW).toUri();
         String[] clean_query = query.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
         StringBuilder sbuilder = new StringBuilder();
 
@@ -220,7 +230,7 @@ public class Searcher {
         double norm = 1 / Math.sqrt(sumw);
 
 
-        int N = countLines("resources/output/metadata.idx");
+
 
 
         TreeMultimap<String, IndexEntry> query_index = TreeMultimap.create();
@@ -311,7 +321,7 @@ public class Searcher {
     public void matchTitles(Set<SearchEntry> weights,int topr) {
         BufferedReader meta = null;
         try {
-            meta = new BufferedReader(new FileReader("resources/output/metadata.idx"));
+            meta = new BufferedReader(new FileReader(pathToIndex+"metadata.idx"));
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
@@ -320,61 +330,25 @@ public class Searcher {
         String title = "";
         String did = "";
         int count = 0;
+
+       // HashMap<Integer,String> metadata = loadMetadata();
+
         for (Object entry : weights.toArray()) {
             SearchEntry sentry = (SearchEntry) entry;
             int w = sentry.getDocId();
             ArrayList<Integer> toExclude = new ArrayList<Integer>();
             try {
-                meta = new BufferedReader(new FileReader("resources/output/metadata.idx"));
+                meta = new BufferedReader(new FileReader(pathToIndex+"metadata.idx"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             if (count < topr) {
-                try {
 
-                    while ((metaLine = meta.readLine()) != null) {
-                        // title = metaLine.substring(0,metaLine.indexOf(":"));
-                        String metalineres[] = metaLine.split(":");
-                        String parentIds[] = metaLine.split("-");
-                        String parentId = "";
-                        if (parentIds.length > 1) {
-                            parentId = parentIds[1];
-                        }
-                        if (metalineres.length > 1)
-                            did = metalineres[1];
-                        else
-                            did = "0";
-                        title = metalineres[0];
-                        // did = metaLine.substring(metaLine.indexOf(":"),metaLine.length()-1);
-
-                        //System.out.println(did);
-                        int intdid = 0;
-                        try {
-                            intdid = Integer.parseInt(did);
-                        } catch (NumberFormatException e) {
-                            intdid = 0;
-                        }
-                        //System.out.println(intdid +" ## "+weights.get(w));
-                        if (w == intdid) {
-                            System.out.println("title: " + title + " | docid: " + intdid + "| weight: " + sentry.getWeight());
-                            toExclude.add(intdid);
-                            break;
-                        }
-                        //System.out.println(parentId);
-                       /*try {
-                            if (Integer.parseInt(parentId) == w) {
-                                System.out.println("Related Answer #### title: " + title + " | docid: " + did + "| weight: " + sentry.getWeight());
-                          //      System.out.println(parentId);
-                            }
-                        }catch(NumberFormatException e){
-
-                        }*/
-
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(metadata.containsKey(w)){
+                    title = metadata.get(w);
+                    System.out.println("title: " + title + " | docid: " + w + "| weight: " + sentry.getWeight());
+                    toExclude.add(w);
                 }
 
                 if (!toExclude.contains(w))
@@ -385,5 +359,68 @@ public class Searcher {
             }
         }
 
+    }
+
+    public HashMap<Integer,String> loadMetadata(){
+        BufferedReader meta = null;
+        String metaLine = "";
+        HashMap<Integer,String> metadata = new HashMap<>();
+        try {
+            meta = new BufferedReader(new FileReader(pathToIndex+"metadata.idx"));
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+        String title = "";
+        String did = "";
+        try {
+            while ((metaLine = meta.readLine()) != null) {
+                // title = metaLine.substring(0,metaLine.indexOf(":"));
+                String metalineres[] = metaLine.split(":");
+                String parentIds[] = metaLine.split("-");
+                String parentId = "";
+                if (parentIds.length > 1) {
+                    parentId = parentIds[1];
+                }
+                if (metalineres.length > 1)
+                    did = metalineres[1];
+                else
+                    did = "0";
+                title = metalineres[0];
+                // did = metaLine.substring(metaLine.indexOf(":"),metaLine.length()-1);
+
+                //System.out.println(did);
+                int intdid = 0;
+                try {
+                    intdid = Integer.parseInt(did);
+                } catch (NumberFormatException e) {
+                    intdid = 0;
+                }
+                //System.out.println(intdid +" ## "+weights.get(w));
+                metadata.put(intdid,title);
+
+
+
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        System.out.println("[x] loaded metadata");
+        return metadata;
+    }
+
+    @Command
+    public void setIndex(String s){
+        pathToIndex = s;
+    }
+
+    @Command
+    public void setPathToSW(String s){
+        pathToSW = s;
+    }
+
+    @Command
+    public void quit(){
+        System.out.println("[x]exiting...");
+        System.exit(0);
     }
 }
